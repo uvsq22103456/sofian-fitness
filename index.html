@@ -3,265 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SOFIAN ELITE V3</title>
+    <title>SOFIAN.FIT - COACH MODE</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap');
-        
-        :root { 
-            --bg: #070708; 
-            --card: #121216; 
-            --accent-red: #e11d48;
-            --accent-blue: #1e40af;
-        }
-
+        :root { --bg: #050505; --card: #0f0f13; --accent-red: #ff003c; --accent-blue: #0062ff; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
         .font-sport { font-family: 'Orbitron', sans-serif; }
-        .view-container { flex: 1; overflow-y: auto; padding-bottom: 120px !important; scroll-behavior: smooth; }
-        
-        .glass { background: rgba(18, 18, 22, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
-        
-        /* Calendrier Style Nitro */
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .cal-day { 
-            aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 12px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.02); transition: all 0.2s;
-        }
-        .cal-selected { border: 2px solid var(--accent-red); color: white !important; background: rgba(225, 29, 72, 0.1); }
-        .cal-today { color: var(--accent-blue) !important; font-size: 14px; text-decoration: underline; }
-        .cal-has-sport { position: relative; }
-        .cal-has-sport::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--accent-red); border-radius: 50%; }
-
-        .nav-item { opacity: 0.3; transition: 0.3s; }
-        .nav-active { opacity: 1; color: var(--accent-red); transform: translateY(-3px); }
-
-        input { background: #1c1c21 !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px; padding: 12px; outline: none; }
-        input:focus { border-color: var(--accent-red) !important; }
-
-        .btn-gradient { background: linear-gradient(135deg, var(--accent-red), #9f1239); color: white; font-weight: 900; transition: 0.2s; }
-        .btn-gradient:active { transform: scale(0.95); }
+        .view-container { flex: 1; overflow-y: auto; padding-bottom: 120px; }
+        .glass { background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .card { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; }
+        .cal-day { aspect-ratio: 1/1; border-radius: 12px; font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; position: relative; }
+        .cal-selected { border: 2px solid var(--accent-red); background: rgba(255, 0, 60, 0.1); }
+        .cal-planned::after { content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; background: var(--accent-blue); border-radius: 50%; }
+        .nav-active { color: var(--accent-red); opacity: 1 !important; }
+        input { background: #1a1a20 !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 10px; padding: 10px; outline: none; }
+        .btn-nitro { background: linear-gradient(135deg, var(--accent-red), #6a0019); font-weight: 900; }
+        .motivation-banner { background: linear-gradient(90deg, transparent, rgba(255,0,60,0.1), transparent); border-y: 1px solid rgba(255,0,60,0.2); }
     </style>
 </head>
 <body>
 
     <header class="glass sticky top-0 z-40 pt-12 pb-4 px-6 flex justify-between items-center">
         <div>
-            <h1 class="font-sport text-xl font-black tracking-tighter italic">SOFIAN<span class="text-rose-600">.</span>ELITE</h1>
-            <div class="flex gap-2 items-center">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <p class="text-[9px] uppercase tracking-widest opacity-50 font-bold" id="header-date">--</p>
-            </div>
+            <h1 class="font-sport text-xl font-black italic text-white uppercase">SOFIAN<span class="text-rose-600">.FIT</span></h1>
+            <p class="text-[9px] uppercase tracking-[0.2em] opacity-40 font-bold">Elite Training Program</p>
         </div>
-        <div class="bg-white/5 p-2 rounded-2xl border border-white/5 text-center min-w-[60px]">
-            <div class="text-[8px] uppercase font-bold opacity-40 leading-none">Streak</div>
-            <div class="font-sport text-lg text-orange-500" id="streak-val">0</div>
+        <div class="flex gap-2">
+            <div class="bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                <span class="text-orange-500 font-sport" id="streak-val">0</span>🔥
+            </div>
         </div>
     </header>
 
-    <main class="view-container p-5 space-y-6">
+    <div class="motivation-banner py-2 text-center overflow-hidden">
+        <p id="moto-text" class="text-[10px] font-black uppercase italic tracking-widest text-rose-500 italic">ON NE LÂCHE RIEN SOFIAN !</p>
+    </div>
+
+    <main class="view-container p-4 space-y-6">
 
         <section id="view-dash" class="space-y-6">
-            <div class="card p-5">
+            <div class="card p-4">
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center text-[10px] mb-2 opacity-30 font-bold">
+                    <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+                </div>
+                <div id="calendar-days" class="grid grid-cols-7 gap-2"></div>
+            </div>
+
+            <div class="card p-5 border-l-4 border-rose-600 relative overflow-hidden">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 id="month-name" class="text-xs font-black uppercase tracking-widest text-rose-500"></h2>
-                    <div class="flex gap-4 text-xs opacity-50 font-bold">
-                        <button onclick="changeMonth(-1)">←</button>
-                        <button onclick="changeMonth(1)">→</button>
+                    <div>
+                        <h2 class="text-[10px] font-black uppercase opacity-40">Fast Food Hebdo (Max 2)</h2>
+                        <div class="text-3xl font-sport mt-1" id="val-junk">0 / 2</div>
                     </div>
+                    <button onclick="promptJunk()" class="w-12 h-12 bg-rose-600/20 rounded-full text-2xl">🍔</button>
                 </div>
-                <div id="calendar-grid" class="cal-grid"></div>
-                <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
-                    <div class="text-[10px] font-bold opacity-40 uppercase">Sélection : <span id="sel-date-label" class="text-white text-xs ml-1">--</span></div>
-                    <div id="day-status" class="text-[10px] font-black uppercase text-rose-500 italic">REPOS</div>
+                <div id="junk-alert" class="hidden text-[10px] font-black text-rose-600 bg-rose-600/10 p-2 rounded mb-3 text-center animate-pulse italic">
+                    LIMITE DÉPASSÉE ! T'ES SÉRIEUX SOFIAN ?
                 </div>
+                <div id="junk-list" class="space-y-2"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="card p-4 relative overflow-hidden group" onclick="addJunk()">
-                    <div class="absolute -right-2 -bottom-2 text-5xl opacity-10 group-active:scale-110 transition">🍔</div>
-                    <span class="text-[9px] font-black uppercase opacity-40">Fast Food /2</span>
-                    <div class="text-2xl font-sport mt-1" id="val-junk">0</div>
-                    <div class="w-full bg-white/5 h-1 mt-2 rounded-full overflow-hidden">
-                        <div id="bar-junk" class="h-full bg-rose-600 transition-all"></div>
-                    </div>
+            <div class="grid grid-cols-2 gap-4 text-center">
+                <div class="card p-4">
+                    <p class="text-[9px] opacity-40 uppercase font-bold">Cardio (min)</p>
+                    <div class="text-2xl font-sport text-blue-500" id="stat-cardio">0</div>
                 </div>
-                <div class="card p-4 relative overflow-hidden">
-                    <div class="absolute -right-2 -bottom-2 text-5xl opacity-10">🏃</div>
-                    <span class="text-[9px] font-black uppercase opacity-40">Cardio total</span>
-                    <div class="text-2xl font-sport mt-1 text-blue-500" id="val-cardio">0</div>
-                    <span class="text-[8px] opacity-40">minutes</span>
+                <div class="card p-4">
+                    <p class="text-[9px] opacity-40 uppercase font-bold">Poids (kg)</p>
+                    <div class="text-2xl font-sport text-white" id="stat-weight">--</div>
                 </div>
-            </div>
-
-            <div class="card p-5">
-                <canvas id="weightChart" height="160"></canvas>
             </div>
         </section>
 
-        <section id="view-train" class="hidden space-y-6">
-            <h2 class="font-sport text-sm text-rose-500 tracking-widest">COACH VIRTUEL</h2>
-            
-            <div class="space-y-3">
-                <div class="card p-5 border-l-4 border-blue-600" onclick="openWork('course')">
-                    <h3 class="font-black text-sm uppercase">Course de Fond</h3>
-                    <p class="text-xs opacity-50 mt-1">Brûle 400kcal • 30-40 min</p>
-                </div>
-                <div class="card p-5 border-l-4 border-rose-600" onclick="openWork('hiit')">
-                    <h3 class="font-black text-sm uppercase">HIIT Brûle-Gras</h3>
-                    <p class="text-xs opacity-50 mt-1">Intensité Max • 20 min</p>
-                </div>
-            </div>
-
-            <div id="workout-modal" class="hidden card p-6 bg-white/5 border-dashed border-white/20">
-                <h4 id="work-title" class="font-sport text-rose-500 mb-4 text-center"></h4>
-                <div id="work-list" class="space-y-4 text-sm italic opacity-80"></div>
-                <button onclick="completeWork()" class="w-full mt-6 py-4 btn-gradient rounded-2xl text-[10px] uppercase">J'ai fini, valide les points !</button>
-            </div>
-        </section>
-
-        <section id="view-stats" class="hidden space-y-4">
+        <section id="view-plan" class="hidden space-y-6">
             <div class="card p-5 space-y-4">
-                <h3 class="text-xs font-black uppercase opacity-40">Entrer le poids</h3>
-                <input type="number" id="in-weight" placeholder="Ex: 88.5" class="w-full text-center text-2xl font-sport">
-                <button onclick="saveWeight()" class="w-full py-4 btn-gradient rounded-2xl uppercase text-[10px]">Enregistrer</button>
+                <h2 class="font-sport text-xs text-rose-500 tracking-widest">LOG SÉANCE : <span id="sel-date-label"></span></h2>
+                <div class="space-y-3">
+                    <select id="ex-type" class="w-full bg-[#1a1a20] p-3 rounded-xl border border-white/10 text-sm">
+                        <option value="muscu">🏋️ MUSCULATION / POIDS</option>
+                        <option value="cardio">🏃 CARDIO / MINUTES</option>
+                    </select>
+                    <input type="text" id="ex-name" placeholder="Nom de l'exercice..." class="w-full">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" id="ex-val1" placeholder="Poids / Durée">
+                        <input type="number" id="ex-val2" placeholder="Reps (si muscu)">
+                    </div>
+                    <button onclick="saveEx()" class="w-full py-4 btn-nitro rounded-xl text-[10px] uppercase italic">Valider l'effort</button>
+                </div>
             </div>
-            <div id="weight-history" class="space-y-2"></div>
+            <div id="day-list" class="space-y-2"></div>
+        </section>
+
+        <section id="view-stats" class="hidden space-y-4 text-center">
+            <div class="card p-6">
+                <canvas id="weightChart" height="200"></canvas>
+                <div class="mt-6 flex gap-2">
+                    <input type="number" id="weight-in" placeholder="Kg" class="flex-1 text-center font-sport text-xl">
+                    <button onclick="addWeight()" class="px-6 btn-nitro rounded-xl uppercase text-xs">OK</button>
+                </div>
+            </div>
         </section>
 
     </main>
 
-    <nav class="glass fixed bottom-0 w-full z-50 py-4 pb-8 px-6 flex justify-between items-center">
-        <button onclick="nav('dash', this)" class="nav-item nav-active flex flex-col items-center">
-            <span class="text-xl">📊</span>
-            <span class="text-[8px] font-black uppercase mt-1">Dash</span>
+    <nav class="glass fixed bottom-0 w-full z-50 py-4 pb-10 px-8 flex justify-between items-center">
+        <button onclick="nav('dash', this)" class="nav-active opacity-40 flex flex-col items-center">
+            <span class="text-xl">🏠</span>
+            <span class="text-[8px] font-black mt-1 uppercase">Home</span>
         </button>
-        <button onclick="nav('train', this)" class="nav-item flex flex-col items-center">
-            <span class="text-xl">💪</span>
-            <span class="text-[8px] font-black uppercase mt-1">Sport</span>
+        <button onclick="nav('plan', this)" class="opacity-40 flex flex-col items-center">
+            <span class="text-xl">🔥</span>
+            <span class="text-[8px] font-black mt-1 uppercase">Entraîner</span>
         </button>
-        <button onclick="nav('stats', this)" class="nav-item flex flex-col items-center">
-            <span class="text-xl">📏</span>
-            <span class="text-[8px] font-black uppercase mt-1">Poids</span>
+        <button onclick="nav('stats', this)" class="opacity-40 flex flex-col items-center">
+            <span class="text-xl">📈</span>
+            <span class="text-[8px] font-black mt-1 uppercase">Progrès</span>
         </button>
     </nav>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('sofian_final_db')) || {
-            weights: [],
-            junk: {},
-            history: {},
-            cardio: 0
+        let db = JSON.parse(localStorage.getItem('sofian_fit_db')) || {
+            days: {}, weights: [], junk: {}
         };
 
-        let curMonth = new Date();
+        const phrases = [
+            "ON NE LÂCHE RIEN SOFIAN !",
+            "T'ES UNE MACHINE OU QUOI ?",
+            "ALLEZ ON Y CROIT, CHAQUE RÉP COMPTE !",
+            "LE GRAS NE VA PAS PARTIR TOUT SEUL !",
+            "RESTE FOCUS SOFIAN, LE RÉSULTAT ARRIVE !",
+            "PAS D'EXCUSES, QUE DE LA SUEUR !"
+        ];
+
         let selDate = new Date().toISOString().split('T')[0];
-        const today = new Date().toISOString().split('T')[0];
 
-        const workData = {
-            course: { t: "MISSION COURSE", s: ["10 min trot léger", "15 min allure soutenue", "5 min sprint final"] },
-            hiit: { t: "BURN HIIT", s: ["45s Jumping Jacks", "45s Burpees", "45s Gainage", "Repos 15s (x4 tours)"] }
-        };
-
-        function save() { localStorage.setItem('sofian_final_db', JSON.stringify(db)); render(); }
+        function save() { localStorage.setItem('sofian_fit_db', JSON.stringify(db)); render(); }
 
         function nav(id, btn) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById('view-' + id).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('nav-active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
             btn.classList.add('nav-active');
         }
 
-        function changeMonth(v) { curMonth.setMonth(curMonth.getMonth() + v); render(); }
-        function selectDay(d) { selDate = d; render(); }
-
-        function addJunk() {
+        function promptJunk() {
+            const food = prompt("Qu'est-ce que tu as mangé ? (Sois honnête Sofian...)");
+            if(!food) return;
             const week = getWeek(new Date(selDate));
-            db.junk[week] = (db.junk[week] || 0) + 1;
+            if(!db.junk[week]) db.junk[week] = [];
+            db.junk[week].push({d: selDate, f: food});
             save();
         }
 
         function getWeek(d) {
             const date = new Date(d.getTime());
-            date.setHours(0, 0, 0, 0);
+            date.setHours(0,0,0,0);
             date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-            const week1 = new Date(date.getFullYear(), 0, 4);
-            return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+            const w1 = new Date(date.getFullYear(), 0, 4);
+            return 1 + Math.round(((date.getTime() - w1.getTime()) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7);
         }
 
-        function saveWeight() {
-            const v = document.getElementById('in-weight').value;
-            if(!v) return;
-            db.weights.unshift({ d: selDate, v: parseFloat(v) });
+        function saveEx() {
+            const type = document.getElementById('ex-type').value;
+            const name = document.getElementById('ex-name').value;
+            if(!name) return;
+            if(!db.days[selDate]) db.days[selDate] = [];
+            db.days[selDate].push({
+                type, name, 
+                v1: document.getElementById('ex-val1').value,
+                v2: document.getElementById('ex-val2').value
+            });
             save();
-            document.getElementById('in-weight').value = '';
+            document.getElementById('ex-name').value = "";
         }
 
-        function openWork(type) {
-            const w = workData[type];
-            document.getElementById('work-title').innerText = w.t;
-            document.getElementById('work-list').innerHTML = w.s.map(x => `• ${x}`).join('<br>');
-            document.getElementById('workout-modal').classList.remove('hidden');
-        }
-
-        function completeWork() {
-            db.cardio += 25;
-            db.history[selDate] = true;
-            document.getElementById('workout-modal').classList.add('hidden');
+        function addWeight() {
+            const v = document.getElementById('weight-in').value;
+            if(!v) return;
+            db.weights.push({d: selDate, v: parseFloat(v)});
             save();
         }
 
         function render() {
-            const week = getWeek(new Date(selDate));
-            const junkCount = db.junk[week] || 0;
-            document.getElementById('val-junk').innerText = junkCount + " / 2";
-            document.getElementById('bar-junk').style.width = Math.min((junkCount/2)*100, 100) + '%';
-            document.getElementById('bar-junk').style.background = junkCount > 2 ? '#e11d48' : '#1e40af';
-            document.getElementById('val-cardio').innerText = db.cardio;
+            document.getElementById('moto-text').innerText = phrases[Math.floor(Math.random() * phrases.length)];
             document.getElementById('sel-date-label').innerText = selDate;
-            document.getElementById('day-status').innerText = db.history[selDate] ? "SÉANCE VALIDÉE ✅" : "REPOS";
-            document.getElementById('day-status').style.color = db.history[selDate] ? "#10b981" : "#e11d48";
-            document.getElementById('header-date').innerText = new Date().toLocaleDateString('fr-FR', {weekday:'short', day:'numeric', month:'short'});
 
-            // Calendrier
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = "";
-            const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-            document.getElementById('month-name').innerText = monthNames[curMonth.getMonth()] + " " + curMonth.getFullYear();
-            
-            const firstDay = new Date(curMonth.getFullYear(), curMonth.getMonth(), 1).getDay();
-            const daysInMonth = new Date(curMonth.getFullYear(), curMonth.getMonth() + 1, 0).getDate();
-            const offset = firstDay === 0 ? 6 : firstDay - 1;
-
-            for(let i=0; i<offset; i++) grid.innerHTML += `<div></div>`;
-            for(let d=1; d<=daysInMonth; d++) {
-                const dStr = `${curMonth.getFullYear()}-${String(curMonth.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const hasSport = db.history[dStr] ? 'cal-has-sport' : '';
-                const isSel = dStr === selDate ? 'cal-selected' : '';
-                const isTod = dStr === today ? 'cal-today' : '';
-                grid.innerHTML += `<div onclick="selectDay('${dStr}')" class="cal-day ${hasSport} ${isSel} ${isTod}">${d}</div>`;
-            }
-
-            // Streak simple
-            let streak = 0;
-            let check = new Date();
-            while(db.history[check.toISOString().split('T')[0]]) {
-                streak++;
-                check.setDate(check.getDate() - 1);
-            }
-            document.getElementById('streak-val').innerText = streak;
-
-            // Poids history
-            document.getElementById('weight-history').innerHTML = db.weights.slice(0,5).map(w => `
-                <div class="card p-3 flex justify-between text-xs font-bold">
-                    <span class="opacity-40">${w.d}</span>
-                    <span class="text-rose-500">${w.v} kg</span>
+            // Junk Food Section
+            const week = getWeek(new Date(selDate));
+            const listJunk = db.junk[week] || [];
+            document.getElementById('val-junk').innerText = `${listJunk.length} / 2`;
+            document.getElementById('junk-alert').classList.toggle('hidden', listJunk.length <= 2);
+            document.getElementById('junk-list').innerHTML = listJunk.map(j => `
+                <div class="text-[10px] bg-white/5 p-2 rounded flex justify-between uppercase font-bold italic">
+                    <span>${j.f}</span><span class="opacity-40">${j.d}</span>
                 </div>
             `).join('');
+
+            // Calendar
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = "";
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            for(let d=1; d<=daysInMonth; d++) {
+                const dStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const hasSport = db.days[dStr] && db.days[dStr].length > 0;
+                const isSel = dStr === selDate ? 'cal-selected' : '';
+                grid.innerHTML += `<div onclick="selDate='${dStr}';render()" class="cal-day ${isSel} ${hasSport ? 'cal-planned' : ''}">${d}</div>`;
+            }
+
+            // Dashboard Stats
+            let cardioTotal = 0;
+            Object.values(db.days).flat().forEach(e => {
+                if(e.type === 'cardio') cardioTotal += parseInt(e.v1 || 0);
+            });
+            document.getElementById('stat-cardio').innerText = cardioTotal;
+            document.getElementById('stat-weight').innerText = db.weights.length ? db.weights[db.weights.length-1].v : "--";
+
+            // List Exercices log
+            const dList = document.getElementById('day-list');
+            dList.innerHTML = "";
+            (db.days[selDate] || []).forEach(ex => {
+                dList.innerHTML += `
+                    <div class="card p-4 border-l-2 border-blue-500 bg-white/[0.02]">
+                        <p class="text-[9px] font-black text-blue-500 uppercase">${ex.type}</p>
+                        <p class="font-bold text-sm uppercase italic">${ex.name}</p>
+                        <p class="text-xs opacity-50 font-sport">${ex.v1}${ex.type=='muscu'?'kg':' min'} ${ex.v2?' x '+ex.v2:''}</p>
+                    </div>
+                `;
+            });
 
             updateChart();
         }
@@ -269,20 +242,21 @@
         function updateChart() {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if(window.wChart) window.wChart.destroy();
-            const data = [...db.weights].reverse();
+            const data = db.weights.slice(-7);
             window.wChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: data.map(x => x.d.split('-')[2]),
                     datasets: [{
                         data: data.map(x => x.v),
-                        borderColor: '#e11d48',
+                        borderColor: '#ff003c',
                         borderWidth: 3,
                         tension: 0.4,
-                        pointRadius: 0
+                        pointRadius: 4,
+                        pointBackgroundColor: '#ff003c'
                     }]
                 },
-                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#444' } } } }
+                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
         }
 
