@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SOFIAN.FIT V7</title>
+    <title>SOFIAN.FIT | PLANNER</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,7 +11,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap');
         
-        :root { --bg: #000000; --card: #121212; --red: #ff003c; --blue: #007aff; }
+        :root { --bg: #000000; --card: #121212; --red: #ff003c; --blue: #007aff; --green: #00ff66; }
         
         body { 
             font-family: 'Inter', sans-serif; 
@@ -25,29 +25,17 @@
 
         .font-sport { font-family: 'Orbitron', sans-serif; }
         
-        /* ZONE DE CONTENU PRINCIPALE - C'est ici que la correction du scroll se joue */
+        /* SCROLL ET MARGES */
         .main-content { 
             flex: 1; 
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 160px; /* Marge énorme pour que rien ne soit caché */
+            padding-bottom: 180px; 
             padding-top: 20px;
         }
 
-        /* HEADER & NAV */
-        .glass-header { 
-            background: rgba(0,0,0,0.9); 
-            border-bottom: 1px solid #222; 
-            padding-top: max(env(safe-area-inset-top), 15px);
-            padding-bottom: 15px;
-            z-index: 50;
-        }
-        .glass-nav { 
-            background: rgba(0,0,0,0.95); 
-            border-top: 1px solid #222; 
-            padding-bottom: max(env(safe-area-inset-bottom), 20px);
-            z-index: 50;
-        }
+        .glass-header { background: rgba(0,0,0,0.9); border-bottom: 1px solid #222; padding-top: max(env(safe-area-inset-top), 15px); padding-bottom: 15px; z-index: 50; }
+        .glass-nav { background: rgba(0,0,0,0.95); border-top: 1px solid #222; padding-bottom: max(env(safe-area-inset-bottom), 20px); z-index: 50; }
 
         /* CALENDRIER */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
@@ -59,11 +47,34 @@
         .cal-day.selected { border-color: var(--red); background: rgba(255,0,60,0.1); }
         .cal-day.today { color: var(--red); text-decoration: underline; }
         
-        .dots { display: flex; gap: 2px; position: absolute; bottom: 4px; }
+        /* Indicateurs (Dots) */
+        .dots { display: flex; gap: 2px; position: absolute; bottom: 4px; justify-content: center; width: 100%; flex-wrap: wrap; }
         .dot { width: 4px; height: 4px; border-radius: 50%; }
-        .dot-m { background: var(--red); }
-        .dot-c { background: var(--blue); }
-        .dot-j { background: #fbbf24; }
+        
+        /* Styles des dots */
+        .dot-planned { border: 1px solid #666; background: transparent; } /* Vide = Prévu */
+        .dot-done-m { background: var(--red); box-shadow: 0 0 2px var(--red); } /* Plein = Fait */
+        .dot-done-c { background: var(--blue); box-shadow: 0 0 2px var(--blue); }
+        .dot-junk { background: #fbbf24; }
+
+        /* CARD STYLES */
+        .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #222; margin-bottom: 16px; }
+        
+        /* CARD ITEM (PLANIFIÉ VS FAIT) */
+        .item-row { transition: all 0.3s ease; border: 1px solid transparent; }
+        
+        .item-planned { 
+            border: 1px dashed #444; 
+            background: rgba(255,255,255,0.02); 
+            opacity: 0.8; 
+        }
+        
+        .item-done { 
+            border: 1px solid rgba(255,255,255,0.1); 
+            background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
+        }
+        .item-done.type-muscu { border-left: 3px solid var(--red); }
+        .item-done.type-cardio { border-left: 3px solid var(--blue); }
 
         /* INPUTS */
         input, select { 
@@ -74,16 +85,9 @@
         }
         input:focus { border-bottom-color: var(--red) !important; }
 
-        .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #222; margin-bottom: 16px; }
-        
-        .btn-main { 
-            background: var(--red); color: black; font-weight: 900; 
-            text-transform: uppercase; padding: 15px; border-radius: 12px; width: 100%; 
-        }
-
+        .btn-main { background: var(--red); color: black; font-weight: 900; text-transform: uppercase; padding: 15px; border-radius: 12px; width: 100%; }
         .nav-btn { opacity: 0.4; transition: 0.2s; }
         .nav-active { opacity: 1 !important; color: var(--red); transform: scale(1.1); }
-        
         .hidden { display: none !important; }
     </style>
 </head>
@@ -92,10 +96,15 @@
     <header class="glass-header px-6 flex justify-between items-center sticky top-0">
         <div>
             <h1 class="font-sport text-xl italic tracking-tighter">SOFIAN<span class="text-rose-600">.FIT</span></h1>
-            <p id="moto" class="text-[9px] font-black uppercase tracking-widest text-gray-400 mt-1">NO PAIN NO GAIN</p>
+            <p class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">PLANIFIER & EXÉCUTER</p>
         </div>
-        <div class="text-[9px] font-black uppercase text-rose-500 border border-rose-900 px-2 py-1 rounded">
-            JUNK: <span id="junk-score">0</span>/2
+        <div class="flex flex-col items-end">
+            <div class="text-[9px] font-black uppercase text-green-400 border border-green-900 px-2 py-1 rounded mb-1">
+                STREAK: <span id="streak-score">0</span>
+            </div>
+            <div class="text-[9px] font-black uppercase text-rose-500">
+                JUNK: <span id="junk-score">0</span>/2
+            </div>
         </div>
     </header>
 
@@ -116,22 +125,23 @@
                 <div id="cal-grid" class="cal-grid"></div>
             </div>
 
-            <div class="card">
-                <h3 class="text-[10px] font-black uppercase text-gray-400 mb-3">Détail du <span id="sel-date-disp" class="text-white">--</span></h3>
-                <div id="day-list" class="space-y-2"></div>
+            <div class="card min-h-[150px]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-[10px] font-black uppercase text-gray-400">Programme du <span id="sel-date-disp" class="text-white">--</span></h3>
+                    <button onclick="nav('add')" class="text-[9px] bg-white text-black px-3 py-1 rounded font-black uppercase shadow hover:scale-105 transition">+ Planifier</button>
+                </div>
+                <div id="day-list" class="space-y-3"></div>
             </div>
-            
             <div class="h-10"></div>
         </section>
 
         <section id="view-stats" class="hidden">
             <div class="card">
-                <h2 class="font-sport text-sm uppercase text-rose-500 mb-4">Courbe de Poids</h2>
+                <h2 class="font-sport text-sm uppercase text-rose-500 mb-4">Poids (kg)</h2>
                 <div class="relative h-48 w-full">
                     <canvas id="weightChart"></canvas>
                 </div>
             </div>
-
             <div class="card">
                 <h2 class="text-[10px] font-black uppercase text-gray-400 mb-2">Nouvelle Pesée</h2>
                 <div class="flex gap-4">
@@ -139,8 +149,7 @@
                     <button onclick="addWeight()" class="bg-white text-black font-black px-6 rounded">OK</button>
                 </div>
             </div>
-
-            <div class="card">
+             <div class="card">
                 <h2 class="text-[10px] font-black uppercase text-gray-400 mb-3">Historique</h2>
                 <div id="weight-history" class="space-y-2 max-h-48 overflow-y-auto"></div>
             </div>
@@ -148,8 +157,8 @@
 
         <section id="view-add" class="hidden">
             <button onclick="nav('home')" class="mb-4 text-xs font-bold opacity-50">← RETOUR</button>
-            <div class="card space-y-5">
-                <h2 class="font-sport text-lg uppercase text-rose-500 italic">Ajouter une entrée</h2>
+            <div class="card space-y-6">
+                <h2 class="font-sport text-lg uppercase text-rose-500 italic">Planifier une séance</h2>
                 
                 <select id="add-type" onchange="toggleForm()">
                     <option value="muscu">🏋️ MUSCULATION</option>
@@ -164,7 +173,8 @@
                     <input type="number" id="add-v2" placeholder="Reps">
                 </div>
 
-                <button onclick="saveEntry()" class="btn-main mt-4">ENREGISTRER</button>
+                <button onclick="saveEntry()" class="btn-main mt-4">AJOUTER AU PLANNING</button>
+                <p class="text-[10px] text-center opacity-40 mt-2">La séance sera marquée "À FAIRE".</p>
             </div>
         </section>
 
@@ -173,13 +183,11 @@
     <nav class="glass-nav fixed bottom-0 w-full flex justify-between items-center px-8 pt-2">
         <button onclick="nav('home')" id="btn-home" class="nav-btn nav-active flex flex-col items-center">
             <span class="text-2xl">📅</span>
-            <span class="text-[9px] font-black uppercase mt-1">Journal</span>
+            <span class="text-[9px] font-black uppercase mt-1">Planning</span>
         </button>
-        
         <button onclick="nav('add')" id="btn-add" class="bg-rose-600 w-14 h-14 rounded-full flex items-center justify-center -mt-8 shadow-lg shadow-rose-600/50 border-4 border-black z-50">
             <span class="text-3xl font-black text-black">+</span>
         </button>
-
         <button onclick="nav('stats')" id="btn-stats" class="nav-btn flex flex-col items-center">
             <span class="text-2xl">📈</span>
             <span class="text-[9px] font-black uppercase mt-1">Stats</span>
@@ -187,44 +195,34 @@
     </nav>
 
     <script>
-        // --- DATA INIT ---
-        let db = JSON.parse(localStorage.getItem('sofian_v7')) || { logs: {}, weights: [] };
+        // --- DATA ---
+        // Structure: logs: { "2024-02-11": [ {type, name, v1, v2, status: 'planned'|'done'} ] }
+        let db = JSON.parse(localStorage.getItem('sofian_v8')) || { logs: {}, weights: [] };
         let selDate = new Date().toISOString().split('T')[0];
         let viewDate = new Date();
         let chartInstance = null;
 
-        function save() { localStorage.setItem('sofian_v7', JSON.stringify(db)); render(); }
+        function save() { localStorage.setItem('sofian_v8', JSON.stringify(db)); render(); }
 
         // --- NAVIGATION ---
         function nav(view) {
-            // Cacher toutes les sections
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-stats').classList.add('hidden');
-            document.getElementById('view-add').classList.add('hidden');
-            
-            // Afficher la bonne
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById('view-' + view).classList.remove('hidden');
-
-            // Gérer les boutons actifs
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
             if(view !== 'add') document.getElementById('btn-' + view).classList.add('nav-active');
-
-            // Si on va sur stats, on force le rendu du graph
             if(view === 'stats') setTimeout(renderChart, 100);
         }
 
-        // --- FORM LOGIC ---
+        // --- ACTIONS ---
         function toggleForm() {
             const t = document.getElementById('add-type').value;
             const grp = document.getElementById('grp-stats');
-            const name = document.getElementById('add-name');
-            
             if(t === 'junk') {
                 grp.classList.add('hidden');
-                name.placeholder = "C'était quoi ?";
+                document.getElementById('add-name').placeholder = "C'était quoi ?";
             } else {
                 grp.classList.remove('hidden');
-                name.placeholder = t === 'muscu' ? "Exercice (ex: Bench)" : "Activité (ex: Tapis)";
+                document.getElementById('add-name').placeholder = t === 'muscu' ? "Exercice" : "Activité";
                 document.getElementById('add-v2').classList.toggle('hidden', t === 'cardio');
             }
         }
@@ -232,16 +230,20 @@
         function saveEntry() {
             const t = document.getElementById('add-type').value;
             const n = document.getElementById('add-name').value;
-            if(!n) return alert("Mets un nom !");
+            if(!n) return alert("Remplis le nom !");
 
             if(!db.logs[selDate]) db.logs[selDate] = [];
+            
+            // Par défaut, c'est "planned" (à faire), sauf le Fast Food qui est "done" (subi/kiffé)
+            const status = t === 'junk' ? 'done' : 'planned';
+
             db.logs[selDate].push({
                 type: t, name: n,
                 v1: document.getElementById('add-v1').value,
-                v2: document.getElementById('add-v2').value
+                v2: document.getElementById('add-v2').value,
+                status: status 
             });
 
-            // Reset
             document.getElementById('add-name').value = "";
             document.getElementById('add-v1').value = "";
             document.getElementById('add-v2').value = "";
@@ -249,27 +251,26 @@
             nav('home');
         }
 
-        function addWeight() {
-            const w = document.getElementById('weight-in').value;
-            if(w) {
-                db.weights.push({ d: selDate, v: parseFloat(w) });
-                save();
-                document.getElementById('weight-in').value = "";
-                renderChart(); // Rafraichir le graph direct
-            }
+        function toggleStatus(idx) {
+            const item = db.logs[selDate][idx];
+            // On bascule entre done et planned
+            item.status = item.status === 'planned' ? 'done' : 'planned';
+            save();
         }
 
         function deleteLog(idx) {
-            if(confirm("Supprimer ?")) {
+            if(confirm("Supprimer cette entrée ?")) {
                 db.logs[selDate].splice(idx, 1);
                 save();
             }
         }
 
-        function changeMonth(dir) {
-            viewDate.setMonth(viewDate.getMonth() + dir);
-            render();
+        function addWeight() {
+            const w = document.getElementById('weight-in').value;
+            if(w) { db.weights.push({ d: selDate, v: parseFloat(w) }); save(); document.getElementById('weight-in').value=""; renderChart(); }
         }
+
+        function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); render(); }
 
         // --- RENDER ---
         function render() {
@@ -295,53 +296,79 @@
                 let dots = "";
                 if(db.logs[dStr]) {
                     db.logs[dStr].forEach(l => {
-                        if(l.type==='muscu') dots += '<div class="dot dot-m"></div>';
-                        else if(l.type==='cardio') dots += '<div class="dot dot-c"></div>';
-                        else dots += '<div class="dot dot-j"></div>';
+                        if(l.type === 'junk') dots += '<div class="dot dot-junk"></div>';
+                        else if(l.status === 'planned') dots += '<div class="dot dot-planned"></div>'; // Vide si prévu
+                        else if(l.type === 'muscu') dots += '<div class="dot dot-done-m"></div>'; // Plein si fait
+                        else if(l.type === 'cardio') dots += '<div class="dot dot-done-c"></div>';
                     });
                 }
 
                 grid.innerHTML += `<div onclick="selDate='${dStr}';render()" class="cal-day ${isSel} ${isToday}">${d}<div class="dots">${dots}</div></div>`;
             }
 
-            // 2. Détails jour
+            // 2. Liste du jour
             document.getElementById('sel-date-disp').innerText = selDate;
             const list = document.getElementById('day-list');
             const logs = db.logs[selDate] || [];
-            
+
             if(logs.length === 0) {
-                list.innerHTML = `<div class="text-center opacity-30 text-xs italic py-4">Rien ce jour-là. Repos ?</div>`;
+                list.innerHTML = `<div class="text-center opacity-30 text-xs italic py-6">Aucune séance planifiée.</div>`;
             } else {
                 list.innerHTML = logs.map((l, i) => {
-                    let color = l.type==='muscu' ? 'text-rose-500' : (l.type==='cardio'?'text-blue-500':'text-yellow-500');
-                    let icon = l.type==='muscu' ? '🏋️' : (l.type==='cardio'?'🏃':'🍔');
-                    let detail = l.type==='junk' ? '' : `${l.v1}${l.type=='muscu'?'kg':' min'} ${l.v2?'x '+l.v2:''}`;
+                    const isPlanned = l.status === 'planned';
+                    const rowClass = isPlanned ? 'item-planned' : `item-done type-${l.type}`;
+                    const icon = l.type==='muscu'?'🏋️':(l.type==='cardio'?'🏃':'🍔');
+                    
+                    // Bouton de validation (Uniquement pour Sport)
+                    let actionBtn = "";
+                    if(l.type !== 'junk') {
+                        if(isPlanned) {
+                            actionBtn = `<button onclick="toggleStatus(${i})" class="bg-green-500 text-black px-3 py-2 rounded-lg font-black text-[10px] uppercase shadow-lg animate-pulse">Valider</button>`;
+                        } else {
+                            actionBtn = `<span class="text-green-500 font-bold text-xs mr-2">OK</span>`;
+                        }
+                    }
+
                     return `
-                        <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-2 ${l.type==='muscu'?'border-rose-500':(l.type==='cardio'?'border-blue-500':'border-yellow-500')}">
-                            <div>
-                                <span class="text-[9px] font-black uppercase ${color}">${icon} ${l.type}</span>
-                                <div class="font-bold text-sm uppercase">${l.name}</div>
-                                <div class="text-[10px] opacity-50 font-sport">${detail}</div>
+                        <div class="flex justify-between items-center p-4 rounded-xl ${rowClass}">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs">${icon}</span>
+                                    <span class="text-[10px] font-black uppercase opacity-60">${isPlanned ? 'À FAIRE' : 'TERMINÉ'}</span>
+                                </div>
+                                <div class="font-bold text-sm uppercase mt-1 ${isPlanned ? 'opacity-70' : ''}">${l.name}</div>
+                                <div class="text-[10px] font-sport opacity-50">${l.v1 ? l.v1 + (l.type=='muscu'?'kg':' min') : ''} ${l.v2 ? 'x '+l.v2 : ''}</div>
                             </div>
-                            <button onclick="deleteLog(${i})" class="text-white/30 text-xs">×</button>
+                            <div class="flex items-center gap-3">
+                                ${actionBtn}
+                                <button onclick="deleteLog(${i})" class="text-white/20 text-xs font-bold px-2 py-2">X</button>
+                            </div>
                         </div>
                     `;
                 }).join('');
             }
 
-            // 3. Junk Score (7 jours)
+            // 3. Scores
             let junk = 0;
-            const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+            // Streak = nombre de jours passés avec au moins 1 sport 'done'
+            let streak = 0;
+            const oneWeekAgo = new Date(); oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
             Object.keys(db.logs).forEach(k => {
-                if(new Date(k) >= weekAgo) db.logs[k].forEach(l => { if(l.type==='junk') junk++; });
+                const dayLogs = db.logs[k];
+                // Junk sur 7 jours
+                if(new Date(k) >= oneWeekAgo) dayLogs.forEach(l => { if(l.type==='junk') junk++; });
+                // Calcul streak global (simple)
+                if(dayLogs.some(l => (l.type==='muscu' || l.type==='cardio') && l.status==='done')) streak++;
             });
+
             const jEl = document.getElementById('junk-score');
             jEl.innerText = junk;
             jEl.style.color = junk > 2 ? '#ff003c' : 'white';
-
-            // 4. Liste Poids (Historique)
-            const wList = document.getElementById('weight-history');
-            wList.innerHTML = db.weights.slice().reverse().map(w => `
+            document.getElementById('streak-score').innerText = streak;
+            
+            // 4. Historique Poids
+             document.getElementById('weight-history').innerHTML = db.weights.slice().reverse().map(w => `
                 <div class="flex justify-between text-xs opacity-60 border-b border-white/5 py-2">
                     <span>${w.d}</span><span>${w.v} kg</span>
                 </div>
@@ -352,38 +379,24 @@
         function renderChart() {
             const ctx = document.getElementById('weightChart');
             if(!ctx) return;
-            
             if(chartInstance) chartInstance.destroy();
-            
             const data = db.weights.slice().sort((a,b) => new Date(a.d) - new Date(b.d)).slice(-10);
-
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: data.map(d => d.d.substring(5)), // MM-DD
+                    labels: data.map(d => d.d.substring(5)),
                     datasets: [{
-                        label: 'Poids',
                         data: data.map(d => d.v),
                         borderColor: '#ff003c',
                         borderWidth: 3,
                         pointBackgroundColor: '#000',
-                        pointBorderColor: '#ff003c',
                         tension: 0.3
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#555' } },
-                        y: { grid: { color: '#222' }, ticks: { color: '#555' } }
-                    }
-                }
+                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#555' } } } }
             });
         }
 
-        // Init
         toggleForm();
         render();
     </script>
