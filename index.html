@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SOFIAN.FIT | ULTIMATE</title>
+    <title>SOFIAN.FIT V7</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,78 +11,101 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap');
         
-        :root { --bg: #050505; --card: #121212; --red: #ff003c; --blue: #007aff; --gold: #ffd700; }
+        :root { --bg: #000000; --card: #121212; --red: #ff003c; --blue: #007aff; }
         
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: white; 
+            height: 100dvh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
         .font-sport { font-family: 'Orbitron', sans-serif; }
         
-        /* Zone de contenu avec scroll infini et marge de sécurité */
-        .view-container { flex: 1; overflow-y: auto; padding-bottom: 140px; scroll-behavior: smooth; }
-        
-        .glass-header { background: rgba(5,5,5,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .glass-nav { background: rgba(5,5,5,0.95); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.1); }
+        /* ZONE DE CONTENU PRINCIPALE - C'est ici que la correction du scroll se joue */
+        .main-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 160px; /* Marge énorme pour que rien ne soit caché */
+            padding-top: 20px;
+        }
 
-        /* CALENDRIER AVANCÉ */
+        /* HEADER & NAV */
+        .glass-header { 
+            background: rgba(0,0,0,0.9); 
+            border-bottom: 1px solid #222; 
+            padding-top: max(env(safe-area-inset-top), 15px);
+            padding-bottom: 15px;
+            z-index: 50;
+        }
+        .glass-nav { 
+            background: rgba(0,0,0,0.95); 
+            border-top: 1px solid #222; 
+            padding-bottom: max(env(safe-area-inset-bottom), 20px);
+            z-index: 50;
+        }
+
+        /* CALENDRIER */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .cal-day { 
             aspect-ratio: 1/1; background: #1a1a1a; border-radius: 8px; 
             display: flex; flex-direction: column; align-items: center; justify-content: start; 
-            padding-top: 4px; position: relative; font-size: 10px; font-weight: 700; border: 1px solid transparent;
+            padding-top: 4px; position: relative; font-size: 11px; font-weight: 700; border: 1px solid transparent;
         }
         .cal-day.selected { border-color: var(--red); background: rgba(255,0,60,0.1); }
         .cal-day.today { color: var(--red); text-decoration: underline; }
         
-        /* Indicateurs visuels sur le calendrier */
-        .dots-container { display: flex; gap: 2px; position: absolute; bottom: 3px; justify-content: center; width: 100%; flex-wrap: wrap; }
+        .dots { display: flex; gap: 2px; position: absolute; bottom: 4px; }
         .dot { width: 4px; height: 4px; border-radius: 50%; }
-        .dot-sport { background: var(--blue); }
-        .dot-muscu { background: var(--red); }
-        .icon-junk { font-size: 8px; line-height: 1; }
+        .dot-m { background: var(--red); }
+        .dot-c { background: var(--blue); }
+        .dot-j { background: #fbbf24; }
 
-        /* Inputs Style "Underline" */
+        /* INPUTS */
         input, select { 
             background: transparent !important; border: none !important; 
             border-bottom: 1px solid #333 !important; color: white !important; 
             padding: 12px 0 !important; width: 100%; outline: none !important; 
             font-weight: 600; font-size: 16px; border-radius: 0 !important;
         }
-        input:focus, select:focus { border-bottom-color: var(--red) !important; }
+        input:focus { border-bottom-color: var(--red) !important; }
 
         .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #222; margin-bottom: 16px; }
         
-        .btn-action { 
-            background: linear-gradient(135deg, var(--red), #990024); 
-            color: white; font-weight: 900; text-transform: uppercase; 
-            padding: 15px; border-radius: 12px; width: 100%; letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(255,0,60,0.3); transition: 0.2s;
+        .btn-main { 
+            background: var(--red); color: black; font-weight: 900; 
+            text-transform: uppercase; padding: 15px; border-radius: 12px; width: 100%; 
         }
-        .btn-action:active { transform: scale(0.95); }
 
-        .nav-active { color: var(--red); opacity: 1 !important; transform: scale(1.1); }
+        .nav-btn { opacity: 0.4; transition: 0.2s; }
+        .nav-active { opacity: 1 !important; color: var(--red); transform: scale(1.1); }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <header class="glass-header pt-12 pb-4 px-6 sticky top-0 z-50 flex justify-between items-center">
+    <header class="glass-header px-6 flex justify-between items-center sticky top-0">
         <div>
             <h1 class="font-sport text-xl italic tracking-tighter">SOFIAN<span class="text-rose-600">.FIT</span></h1>
             <p id="moto" class="text-[9px] font-black uppercase tracking-widest text-gray-400 mt-1">NO PAIN NO GAIN</p>
         </div>
-        <div class="flex flex-col items-end">
-             <div class="bg-rose-900/30 px-3 py-1 rounded-full border border-rose-600/50">
-                <span class="font-sport text-rose-500 text-xs" id="streak-disp">0 🔥</span>
-            </div>
-            <span class="text-[8px] uppercase mt-1 opacity-50 font-bold" id="junk-warning">Junk: 0/2</span>
+        <div class="text-[9px] font-black uppercase text-rose-500 border border-rose-900 px-2 py-1 rounded">
+            JUNK: <span id="junk-score">0</span>/2
         </div>
     </header>
 
-    <main class="view-container p-4">
+    <main class="main-content px-4">
 
         <section id="view-home">
             <div class="card">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 id="month-display" class="font-sport text-xs text-blue-500 uppercase"></h2>
-                    <div class="flex gap-4 text-gray-500 font-bold text-xs">
+                    <h2 id="month-label" class="font-sport text-xs text-blue-500 uppercase"></h2>
+                    <div class="flex gap-4 text-xs font-bold text-gray-500">
                         <button onclick="changeMonth(-1)">PREV</button>
                         <button onclick="changeMonth(1)">NEXT</button>
                     </div>
@@ -90,316 +113,279 @@
                 <div class="cal-grid text-center mb-2 text-[9px] font-black opacity-30 uppercase">
                     <span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span>
                 </div>
-                <div id="calendar-grid" class="cal-grid"></div>
+                <div id="cal-grid" class="cal-grid"></div>
             </div>
 
-            <div class="card min-h-[100px]">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-[10px] font-black uppercase text-gray-400">Programme du <span id="sel-date-disp" class="text-white">--</span></h3>
-                    <button onclick="switchView('add')" class="text-[9px] bg-white text-black px-2 py-1 rounded font-bold uppercase">+ Ajouter</button>
-                </div>
-                <div id="day-details" class="space-y-2 text-sm">
-                    <p class="opacity-30 italic text-xs text-center py-4">Rien de prévu pour le moment.</p>
+            <div class="card">
+                <h3 class="text-[10px] font-black uppercase text-gray-400 mb-3">Détail du <span id="sel-date-disp" class="text-white">--</span></h3>
+                <div id="day-list" class="space-y-2"></div>
+            </div>
+            
+            <div class="h-10"></div>
+        </section>
+
+        <section id="view-stats" class="hidden">
+            <div class="card">
+                <h2 class="font-sport text-sm uppercase text-rose-500 mb-4">Courbe de Poids</h2>
+                <div class="relative h-48 w-full">
+                    <canvas id="weightChart"></canvas>
                 </div>
             </div>
 
             <div class="card">
-                <h3 class="text-[10px] font-black uppercase text-gray-400 mb-2">Suivi Poids</h3>
-                <canvas id="weightChart" height="150"></canvas>
+                <h2 class="text-[10px] font-black uppercase text-gray-400 mb-2">Nouvelle Pesée</h2>
+                <div class="flex gap-4">
+                    <input type="number" id="weight-in" placeholder="Ex: 85.5">
+                    <button onclick="addWeight()" class="bg-white text-black font-black px-6 rounded">OK</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="text-[10px] font-black uppercase text-gray-400 mb-3">Historique</h2>
+                <div id="weight-history" class="space-y-2 max-h-48 overflow-y-auto"></div>
             </div>
         </section>
 
         <section id="view-add" class="hidden">
-            <button onclick="switchView('home')" class="mb-4 text-xs font-bold opacity-50 uppercase">← Retour au calendrier</button>
-            
-            <div class="card space-y-6">
-                <h2 class="font-sport text-lg uppercase text-rose-500 italic">Nouvelle Entrée</h2>
+            <button onclick="nav('home')" class="mb-4 text-xs font-bold opacity-50">← RETOUR</button>
+            <div class="card space-y-5">
+                <h2 class="font-sport text-lg uppercase text-rose-500 italic">Ajouter une entrée</h2>
                 
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-[9px] font-black uppercase opacity-50">Type d'activité</label>
-                        <select id="entry-type" onchange="toggleInputs()">
-                            <option value="muscu">🏋️ MUSCULATION</option>
-                            <option value="cardio">🏃 CARDIO / COURSE</option>
-                            <option value="junk">🍔 FAST FOOD (CHEAT)</option>
-                            <option value="weight">⚖️ PESÉE (POIDS)</option>
-                        </select>
-                    </div>
+                <select id="add-type" onchange="toggleForm()">
+                    <option value="muscu">🏋️ MUSCULATION</option>
+                    <option value="cardio">🏃 CARDIO</option>
+                    <option value="junk">🍔 FAST FOOD</option>
+                </select>
 
-                    <div id="input-name-group">
-                        <label class="text-[9px] font-black uppercase opacity-50">Nom / Détail</label>
-                        <input type="text" id="entry-name" placeholder="Ex: Développé couché, Big Mac...">
-                    </div>
+                <input type="text" id="add-name" placeholder="Nom (Squat, Running...)">
 
-                    <div id="input-stats-group" class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[9px] font-black uppercase opacity-50" id="lbl-val1">Poids (kg)</label>
-                            <input type="number" id="entry-val1" placeholder="0">
-                        </div>
-                        <div id="div-val2">
-                            <label class="text-[9px] font-black uppercase opacity-50">Répétitions</label>
-                            <input type="number" id="entry-val2" placeholder="0">
-                        </div>
-                    </div>
-
-                    <button onclick="saveEntry()" class="btn-action">VALIDER & SAUVEGARDER</button>
+                <div id="grp-stats" class="grid grid-cols-2 gap-4">
+                    <input type="number" id="add-v1" placeholder="Poids / Mins">
+                    <input type="number" id="add-v2" placeholder="Reps">
                 </div>
+
+                <button onclick="saveEntry()" class="btn-main mt-4">ENREGISTRER</button>
             </div>
         </section>
 
     </main>
 
-    <nav class="glass-nav fixed bottom-0 w-full z-50 pt-3 pb-8 px-8 flex justify-between items-center">
-        <button onclick="switchView('home')" id="btn-home" class="nav-active opacity-40 flex flex-col items-center transition">
+    <nav class="glass-nav fixed bottom-0 w-full flex justify-between items-center px-8 pt-2">
+        <button onclick="nav('home')" id="btn-home" class="nav-btn nav-active flex flex-col items-center">
             <span class="text-2xl">📅</span>
-            <span class="text-[8px] font-black uppercase mt-1">Journal</span>
+            <span class="text-[9px] font-black uppercase mt-1">Journal</span>
         </button>
         
-        <button onclick="switchView('add')" class="bg-rose-600 w-14 h-14 rounded-full flex items-center justify-center -mt-6 shadow-lg shadow-rose-600/40 border-4 border-black">
-            <span class="text-2xl text-white font-black">+</span>
+        <button onclick="nav('add')" id="btn-add" class="bg-rose-600 w-14 h-14 rounded-full flex items-center justify-center -mt-8 shadow-lg shadow-rose-600/50 border-4 border-black z-50">
+            <span class="text-3xl font-black text-black">+</span>
         </button>
 
-        <button onclick="switchView('home'); document.getElementById('weightChart').scrollIntoView()" class="opacity-40 flex flex-col items-center transition">
+        <button onclick="nav('stats')" id="btn-stats" class="nav-btn flex flex-col items-center">
             <span class="text-2xl">📈</span>
-            <span class="text-[8px] font-black uppercase mt-1">Stats</span>
+            <span class="text-[9px] font-black uppercase mt-1">Stats</span>
         </button>
     </nav>
 
     <script>
-        // CONFIGURATION & DATA
-        let db = JSON.parse(localStorage.getItem('sofian_ultimate_v1')) || {
-            logs: {}, // Format: "2026-02-11": [ {type: 'muscu', name: 'Bench', v1: 100, v2: 10} ]
-            weights: []
-        };
-        
-        const MOTIVATION = [
-            "ON NE LÂCHE RIEN SOFIAN !", "CHAQUE SÉANCE COMPTE !", 
-            "TU VEUX DES RÉSULTATS ? PROUVE-LE !", "PAS D'EXCUSES AUJOURD'HUI !", 
-            "LE GRAS PLEURE, C'EST LA SUEUR !"
-        ];
+        // --- DATA INIT ---
+        let db = JSON.parse(localStorage.getItem('sofian_v7')) || { logs: {}, weights: [] };
+        let selDate = new Date().toISOString().split('T')[0];
+        let viewDate = new Date();
+        let chartInstance = null;
 
-        let displayDate = new Date();
-        let selectedDateStr = new Date().toISOString().split('T')[0];
+        function save() { localStorage.setItem('sofian_v7', JSON.stringify(db)); render(); }
 
-        // --- CORE FUNCTIONS ---
-
-        function save() {
-            localStorage.setItem('sofian_ultimate_v1', JSON.stringify(db));
-            render();
-        }
-
-        function switchView(viewName) {
+        // --- NAVIGATION ---
+        function nav(view) {
+            // Cacher toutes les sections
             document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-stats').classList.add('hidden');
             document.getElementById('view-add').classList.add('hidden');
-            document.getElementById('view-' + viewName).classList.remove('hidden');
             
-            // Reset nav styles
-            document.getElementById('btn-home').classList.remove('nav-active');
-            if(viewName === 'home') document.getElementById('btn-home').classList.add('nav-active');
+            // Afficher la bonne
+            document.getElementById('view-' + view).classList.remove('hidden');
+
+            // Gérer les boutons actifs
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+            if(view !== 'add') document.getElementById('btn-' + view).classList.add('nav-active');
+
+            // Si on va sur stats, on force le rendu du graph
+            if(view === 'stats') setTimeout(renderChart, 100);
         }
 
-        function changeMonth(dir) {
-            displayDate.setMonth(displayDate.getMonth() + dir);
-            render();
-        }
-
-        function toggleInputs() {
-            const type = document.getElementById('entry-type').value;
-            const nameGrp = document.getElementById('input-name-group');
-            const statsGrp = document.getElementById('input-stats-group');
-            const divVal2 = document.getElementById('div-val2');
-            const lblVal1 = document.getElementById('lbl-val1');
-
-            if (type === 'weight') {
-                nameGrp.classList.add('hidden');
-                divVal2.classList.add('hidden');
-                lblVal1.innerText = "Poids Actuel (kg)";
-                statsGrp.classList.remove('hidden');
-            } else if (type === 'junk') {
-                nameGrp.classList.remove('hidden');
-                statsGrp.classList.add('hidden');
-                document.getElementById('entry-name').placeholder = "Qu'est-ce que tu as mangé ?";
+        // --- FORM LOGIC ---
+        function toggleForm() {
+            const t = document.getElementById('add-type').value;
+            const grp = document.getElementById('grp-stats');
+            const name = document.getElementById('add-name');
+            
+            if(t === 'junk') {
+                grp.classList.add('hidden');
+                name.placeholder = "C'était quoi ?";
             } else {
-                nameGrp.classList.remove('hidden');
-                statsGrp.classList.remove('hidden');
-                document.getElementById('entry-name').placeholder = type === 'muscu' ? "Exercice" : "Activité";
-                
-                if (type === 'muscu') {
-                    lblVal1.innerText = "Poids (kg)";
-                    divVal2.classList.remove('hidden');
-                } else {
-                    lblVal1.innerText = "Durée (mins)";
-                    divVal2.classList.add('hidden');
-                }
+                grp.classList.remove('hidden');
+                name.placeholder = t === 'muscu' ? "Exercice (ex: Bench)" : "Activité (ex: Tapis)";
+                document.getElementById('add-v2').classList.toggle('hidden', t === 'cardio');
             }
         }
 
         function saveEntry() {
-            const type = document.getElementById('entry-type').value;
-            
-            // Gestion spéciale Poids
-            if(type === 'weight') {
-                const w = parseFloat(document.getElementById('entry-val1').value);
-                if(w) db.weights.push({d: selectedDateStr, v: w});
-            } else {
-                // Gestion Activités
-                if(!db.logs[selectedDateStr]) db.logs[selectedDateStr] = [];
-                
-                const entry = {
-                    type: type,
-                    name: document.getElementById('entry-name').value || (type==='junk'?'Cheat Meal':'Sport'),
-                    v1: document.getElementById('entry-val1').value,
-                    v2: document.getElementById('entry-val2').value
-                };
-                
-                if(type === 'junk' && !document.getElementById('entry-name').value) return alert("Dis ce que tu as mangé !");
-                
-                db.logs[selectedDateStr].push(entry);
-            }
-            
-            // Reset form
-            document.getElementById('entry-name').value = "";
-            document.getElementById('entry-val1').value = "";
-            document.getElementById('entry-val2').value = "";
-            
+            const t = document.getElementById('add-type').value;
+            const n = document.getElementById('add-name').value;
+            if(!n) return alert("Mets un nom !");
+
+            if(!db.logs[selDate]) db.logs[selDate] = [];
+            db.logs[selDate].push({
+                type: t, name: n,
+                v1: document.getElementById('add-v1').value,
+                v2: document.getElementById('add-v2').value
+            });
+
+            // Reset
+            document.getElementById('add-name').value = "";
+            document.getElementById('add-v1').value = "";
+            document.getElementById('add-v2').value = "";
             save();
-            switchView('home');
+            nav('home');
         }
 
-        function deleteItem(idx) {
-            if(confirm('Supprimer ?')) {
-                db.logs[selectedDateStr].splice(idx, 1);
+        function addWeight() {
+            const w = document.getElementById('weight-in').value;
+            if(w) {
+                db.weights.push({ d: selDate, v: parseFloat(w) });
+                save();
+                document.getElementById('weight-in').value = "";
+                renderChart(); // Rafraichir le graph direct
+            }
+        }
+
+        function deleteLog(idx) {
+            if(confirm("Supprimer ?")) {
+                db.logs[selDate].splice(idx, 1);
                 save();
             }
         }
 
-        // --- RENDER ENGINE ---
+        function changeMonth(dir) {
+            viewDate.setMonth(viewDate.getMonth() + dir);
+            render();
+        }
 
+        // --- RENDER ---
         function render() {
-            // 1. Motivation
-            document.getElementById('moto').innerText = MOTIVATION[Math.floor(Math.random() * MOTIVATION.length)];
-            
-            // 2. Calendrier
-            const grid = document.getElementById('calendar-grid');
+            // 1. Calendrier
+            const grid = document.getElementById('cal-grid');
             grid.innerHTML = "";
-            
-            const year = displayDate.getFullYear();
-            const month = displayDate.getMonth();
-            const monthsNames = ["JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"];
-            document.getElementById('month-display').innerText = `${monthsNames[month]} ${year}`;
+            const y = viewDate.getFullYear();
+            const m = viewDate.getMonth();
+            const months = ["JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"];
+            document.getElementById('month-label').innerText = `${months[m]} ${y}`;
 
-            const firstDay = new Date(year, month, 1).getDay(); // 0 = Dimanche
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const offset = firstDay === 0 ? 6 : firstDay - 1; // Ajustement pour Lundi=0
+            const firstDay = new Date(y, m, 1).getDay();
+            const daysInMonth = new Date(y, m + 1, 0).getDate();
+            const offset = firstDay === 0 ? 6 : firstDay - 1;
 
-            // Cases vides début de mois
             for(let i=0; i<offset; i++) grid.innerHTML += `<div></div>`;
 
-            // Jours
             for(let d=1; d<=daysInMonth; d++) {
-                const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const isSelected = dStr === selectedDateStr ? 'selected' : '';
+                const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const isSel = dStr === selDate ? 'selected' : '';
                 const isToday = dStr === new Date().toISOString().split('T')[0] ? 'today' : '';
                 
-                // Analyse des logs pour les pastilles
-                let dotsHtml = '<div class="dots-container">';
+                let dots = "";
                 if(db.logs[dStr]) {
                     db.logs[dStr].forEach(l => {
-                        if(l.type === 'cardio') dotsHtml += '<div class="dot dot-sport"></div>';
-                        if(l.type === 'muscu') dotsHtml += '<div class="dot dot-muscu"></div>';
-                        if(l.type === 'junk') dotsHtml += '<div class="icon-junk">🍔</div>';
+                        if(l.type==='muscu') dots += '<div class="dot dot-m"></div>';
+                        else if(l.type==='cardio') dots += '<div class="dot dot-c"></div>';
+                        else dots += '<div class="dot dot-j"></div>';
                     });
                 }
-                dotsHtml += '</div>';
 
-                grid.innerHTML += `
-                    <div onclick="selectedDateStr='${dStr}'; render()" class="cal-day ${isSelected} ${isToday}">
-                        ${d}
-                        ${dotsHtml}
-                    </div>
-                `;
+                grid.innerHTML += `<div onclick="selDate='${dStr}';render()" class="cal-day ${isSel} ${isToday}">${d}<div class="dots">${dots}</div></div>`;
             }
 
-            // 3. Détails du jour
-            document.getElementById('sel-date-disp').innerText = selectedDateStr;
-            const detailsDiv = document.getElementById('day-details');
-            if(db.logs[selectedDateStr] && db.logs[selectedDateStr].length > 0) {
-                detailsDiv.innerHTML = db.logs[selectedDateStr].map((l, i) => {
-                    let colorClass = l.type === 'muscu' ? 'text-rose-500' : (l.type === 'cardio' ? 'text-blue-500' : 'text-yellow-500');
-                    let icon = l.type === 'muscu' ? '🏋️' : (l.type === 'cardio' ? '🏃' : '🍔');
-                    let subText = l.type === 'junk' ? '' : `${l.v1} ${l.type==='muscu'?'kg':'min'} ${l.v2 ? 'x '+l.v2 : ''}`;
-                    
+            // 2. Détails jour
+            document.getElementById('sel-date-disp').innerText = selDate;
+            const list = document.getElementById('day-list');
+            const logs = db.logs[selDate] || [];
+            
+            if(logs.length === 0) {
+                list.innerHTML = `<div class="text-center opacity-30 text-xs italic py-4">Rien ce jour-là. Repos ?</div>`;
+            } else {
+                list.innerHTML = logs.map((l, i) => {
+                    let color = l.type==='muscu' ? 'text-rose-500' : (l.type==='cardio'?'text-blue-500':'text-yellow-500');
+                    let icon = l.type==='muscu' ? '🏋️' : (l.type==='cardio'?'🏃':'🍔');
+                    let detail = l.type==='junk' ? '' : `${l.v1}${l.type=='muscu'?'kg':' min'} ${l.v2?'x '+l.v2:''}`;
                     return `
-                        <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-2 ${l.type === 'muscu' ? 'border-rose-500' : (l.type === 'cardio' ? 'border-blue-500' : 'border-yellow-500')}">
+                        <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-2 ${l.type==='muscu'?'border-rose-500':(l.type==='cardio'?'border-blue-500':'border-yellow-500')}">
                             <div>
-                                <span class="text-[9px] font-black uppercase ${colorClass}">${icon} ${l.type}</span>
-                                <div class="font-bold uppercase leading-tight">${l.name}</div>
-                                <div class="text-[10px] opacity-50 font-sport">${subText}</div>
+                                <span class="text-[9px] font-black uppercase ${color}">${icon} ${l.type}</span>
+                                <div class="font-bold text-sm uppercase">${l.name}</div>
+                                <div class="text-[10px] opacity-50 font-sport">${detail}</div>
                             </div>
-                            <button onclick="deleteItem(${i})" class="text-xs opacity-30 px-2">×</button>
+                            <button onclick="deleteLog(${i})" class="text-white/30 text-xs">×</button>
                         </div>
                     `;
                 }).join('');
-            } else {
-                detailsDiv.innerHTML = '<p class="opacity-30 italic text-xs text-center py-4">Rien de prévu ou fait ce jour.</p>';
             }
 
-            // 4. Calcul Streak & Junk Warning
-            // (Logique simple sur les 7 derniers jours pour Junk)
-            let junkCount = 0;
-            const oneWeekAgo = new Date(); oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            Object.keys(db.logs).forEach(date => {
-                if(new Date(date) >= oneWeekAgo) {
-                    db.logs[date].forEach(l => { if(l.type === 'junk') junkCount++; });
-                }
+            // 3. Junk Score (7 jours)
+            let junk = 0;
+            const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+            Object.keys(db.logs).forEach(k => {
+                if(new Date(k) >= weekAgo) db.logs[k].forEach(l => { if(l.type==='junk') junk++; });
             });
-            const junkElem = document.getElementById('junk-warning');
-            junkElem.innerText = `Junk Semaine: ${junkCount}/2`;
-            junkElem.style.color = junkCount > 2 ? '#ff003c' : 'white';
-            
-            // Streak (jours consécutifs avec sport) - Logique simplifiée
-            // (On pourrait faire plus complexe mais restons robuste)
-            // On compte juste le nombre total de jours de sport pour l'instant
-            let sportDays = Object.values(db.logs).filter(dayLogs => dayLogs.some(l => l.type === 'muscu' || l.type === 'cardio')).length;
-            document.getElementById('streak-disp').innerText = sportDays + " 🔥";
+            const jEl = document.getElementById('junk-score');
+            jEl.innerText = junk;
+            jEl.style.color = junk > 2 ? '#ff003c' : 'white';
 
-            updateChart();
+            // 4. Liste Poids (Historique)
+            const wList = document.getElementById('weight-history');
+            wList.innerHTML = db.weights.slice().reverse().map(w => `
+                <div class="flex justify-between text-xs opacity-60 border-b border-white/5 py-2">
+                    <span>${w.d}</span><span>${w.v} kg</span>
+                </div>
+            `).join('');
         }
 
-        function updateChart() {
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            if(window.wChart) window.wChart.destroy();
+        // --- CHART ---
+        function renderChart() {
+            const ctx = document.getElementById('weightChart');
+            if(!ctx) return;
             
-            // Trier les poids par date
-            const sortedWeights = db.weights.sort((a,b) => new Date(a.d) - new Date(b.d)).slice(-10); // Les 10 derniers
+            if(chartInstance) chartInstance.destroy();
+            
+            const data = db.weights.slice().sort((a,b) => new Date(a.d) - new Date(b.d)).slice(-10);
 
-            window.wChart = new Chart(ctx, {
+            chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: sortedWeights.map(w => w.d.split('-').slice(1).join('/')), // MM/DD
+                    labels: data.map(d => d.d.substring(5)), // MM-DD
                     datasets: [{
-                        data: sortedWeights.map(w => w.v),
+                        label: 'Poids',
+                        data: data.map(d => d.v),
                         borderColor: '#ff003c',
                         borderWidth: 3,
-                        tension: 0.3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#000'
+                        pointBackgroundColor: '#000',
+                        pointBorderColor: '#ff003c',
+                        tension: 0.3
                     }]
                 },
-                options: { 
-                    plugins: { legend: { display: false } }, 
-                    scales: { 
-                        y: { grid: { color: '#333' }, ticks: { color: '#666' } }, 
-                        x: { grid: { display: false }, ticks: { color: '#666' } } 
-                    } 
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#555' } },
+                        y: { grid: { color: '#222' }, ticks: { color: '#555' } }
+                    }
                 }
             });
         }
 
         // Init
-        toggleInputs();
+        toggleForm();
         render();
-
     </script>
 </body>
 </html>
