@@ -3,145 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SOFIAN.FIT - COACH MODE</title>
+    <title>SOFIAN.FIT</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap');
-        :root { --bg: #050505; --card: #0f0f13; --accent-red: #ff003c; --accent-blue: #0062ff; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;900&display=swap');
+        
+        :root { --bg: #000000; --card: #0a0a0a; --accent: #ff003c; --accent-dim: rgba(255, 0, 60, 0.15); }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); 
+            color: white; 
+            height: 100dvh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* Réglage du scroll pour éviter que la barre de nav cache le contenu */
+        .view-container { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding-bottom: 180px !important; /* Espace de sécurité en bas */
+            -webkit-overflow-scrolling: touch;
+        }
+
         .font-sport { font-family: 'Orbitron', sans-serif; }
-        .view-container { flex: 1; overflow-y: auto; padding-bottom: 120px; }
-        .glass { background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .card { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; }
-        .cal-day { aspect-ratio: 1/1; border-radius: 12px; font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; position: relative; }
-        .cal-selected { border: 2px solid var(--accent-red); background: rgba(255, 0, 60, 0.1); }
-        .cal-planned::after { content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; background: var(--accent-blue); border-radius: 50%; }
-        .nav-active { color: var(--accent-red); opacity: 1 !important; }
-        input { background: #1a1a20 !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 10px; padding: 10px; outline: none; }
-        .btn-nitro { background: linear-gradient(135deg, var(--accent-red), #6a0019); font-weight: 900; }
-        .motivation-banner { background: linear-gradient(90deg, transparent, rgba(255,0,60,0.1), transparent); border-y: 1px solid rgba(255,0,60,0.2); }
+        
+        /* Glassmorphism pour la barre du haut et du bas */
+        .glass-nav { 
+            background: rgba(0, 0, 0, 0.8); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .card { 
+            background: var(--card); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 24px; 
+        }
+
+        /* Design des inputs ultra-pro */
+        input, select {
+            background: transparent !important;
+            border: none !important;
+            border-bottom: 2px solid rgba(255,255,255,0.1) !important;
+            color: white !important;
+            padding: 12px 4px !important;
+            border-radius: 0 !important;
+            outline: none !important;
+            transition: all 0.3s;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        input:focus { border-bottom-color: var(--accent) !important; background: rgba(255,0,60,0.05) !important; }
+
+        .cal-day { 
+            aspect-ratio: 1/1; border-radius: 14px; font-size: 12px; font-weight: 900; 
+            background: #0f0f0f; display: flex; align-items: center; justify-content: center; 
+        }
+        .cal-selected { background: var(--accent) !important; color: black !important; }
+        .cal-planned { border: 1px solid var(--accent); color: var(--accent); }
+
+        .btn-main {
+            background: var(--accent);
+            color: black;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 16px;
+            border-radius: 18px;
+            transition: 0.2s;
+        }
+        .btn-main:active { transform: scale(0.96); opacity: 0.8; }
+
+        .nav-active { color: var(--accent); transform: scale(1.1); }
     </style>
 </head>
 <body>
 
-    <header class="glass sticky top-0 z-40 pt-12 pb-4 px-6 flex justify-between items-center">
-        <div>
-            <h1 class="font-sport text-xl font-black italic text-white uppercase">SOFIAN<span class="text-rose-600">.FIT</span></h1>
-            <p class="text-[9px] uppercase tracking-[0.2em] opacity-40 font-bold">Elite Training Program</p>
-        </div>
-        <div class="flex gap-2">
-            <div class="bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                <span class="text-orange-500 font-sport" id="streak-val">0</span>🔥
+    <header class="pt-14 pb-4 px-8 glass-nav sticky top-0 z-50">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="font-sport text-xl italic tracking-tighter">SOFIAN<span class="text-rose-600">.FIT</span></h1>
+                <p id="moto-text" class="text-[9px] font-black uppercase tracking-[0.2em] text-rose-500 mt-1">SOUFFRE MAINTENANT, BRILLE APRÈS</p>
             </div>
+            <div class="bg-rose-600 text-black px-3 py-1 rounded-full font-sport text-xs" id="streak-val">0 🔥</div>
         </div>
     </header>
 
-    <div class="motivation-banner py-2 text-center overflow-hidden">
-        <p id="moto-text" class="text-[10px] font-black uppercase italic tracking-widest text-rose-500 italic">ON NE LÂCHE RIEN SOFIAN !</p>
-    </div>
-
-    <main class="view-container p-4 space-y-6">
+    <main class="view-container p-6 space-y-8">
 
         <section id="view-dash" class="space-y-6">
-            <div class="card p-4">
-                <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center text-[10px] mb-2 opacity-30 font-bold">
-                    <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
-                </div>
-                <div id="calendar-days" class="grid grid-cols-7 gap-2"></div>
+            <div class="card p-5">
+                <div id="calendar-grid" class="grid grid-cols-7 gap-3"></div>
             </div>
 
-            <div class="card p-5 border-l-4 border-rose-600 relative overflow-hidden">
-                <div class="flex justify-between items-center mb-4">
+            <div class="card p-6 border-l-4 border-rose-600">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h2 class="text-[10px] font-black uppercase opacity-40">Fast Food Hebdo (Max 2)</h2>
-                        <div class="text-3xl font-sport mt-1" id="val-junk">0 / 2</div>
+                        <h2 class="text-[10px] font-black uppercase opacity-40 mb-1">Cheat Meals /2 Hebdo</h2>
+                        <div class="text-3xl font-sport" id="val-junk">0</div>
                     </div>
-                    <button onclick="promptJunk()" class="w-12 h-12 bg-rose-600/20 rounded-full text-2xl">🍔</button>
+                    <button onclick="promptJunk()" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl">🍔</button>
                 </div>
-                <div id="junk-alert" class="hidden text-[10px] font-black text-rose-600 bg-rose-600/10 p-2 rounded mb-3 text-center animate-pulse italic">
-                    LIMITE DÉPASSÉE ! T'ES SÉRIEUX SOFIAN ?
-                </div>
-                <div id="junk-list" class="space-y-2"></div>
+                <div id="junk-list" class="space-y-2 opacity-60 italic text-xs"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 text-center">
-                <div class="card p-4">
-                    <p class="text-[9px] opacity-40 uppercase font-bold">Cardio (min)</p>
-                    <div class="text-2xl font-sport text-blue-500" id="stat-cardio">0</div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="card p-5">
+                    <p class="text-[9px] font-black opacity-30 uppercase">Cardio (min)</p>
+                    <p class="text-2xl font-sport text-rose-500" id="stat-cardio">0</p>
                 </div>
-                <div class="card p-4">
-                    <p class="text-[9px] opacity-40 uppercase font-bold">Poids (kg)</p>
-                    <div class="text-2xl font-sport text-white" id="stat-weight">--</div>
+                <div class="card p-5">
+                    <p class="text-[9px] font-black opacity-30 uppercase">Poids (kg)</p>
+                    <p class="text-2xl font-sport" id="stat-weight">--</p>
                 </div>
             </div>
         </section>
 
         <section id="view-plan" class="hidden space-y-6">
-            <div class="card p-5 space-y-4">
-                <h2 class="font-sport text-xs text-rose-500 tracking-widest">LOG SÉANCE : <span id="sel-date-label"></span></h2>
-                <div class="space-y-3">
-                    <select id="ex-type" class="w-full bg-[#1a1a20] p-3 rounded-xl border border-white/10 text-sm">
-                        <option value="muscu">🏋️ MUSCULATION / POIDS</option>
-                        <option value="cardio">🏃 CARDIO / MINUTES</option>
+            <div class="card p-6 space-y-6">
+                <h2 class="font-sport text-xs text-rose-500 tracking-widest text-center">LOG D'ENTRAÎNEMENT</h2>
+                
+                <div class="space-y-4">
+                    <select id="ex-type">
+                        <option value="muscu">🏋️ MUSCULATION</option>
+                        <option value="cardio">🏃 CARDIO</option>
                     </select>
-                    <input type="text" id="ex-name" placeholder="Nom de l'exercice..." class="w-full">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="ex-val1" placeholder="Poids / Durée">
-                        <input type="number" id="ex-val2" placeholder="Reps (si muscu)">
+                    
+                    <input type="text" id="ex-name" placeholder="Nom de l'exercice (Squat, Tapis...)">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="ex-val1" placeholder="Poids / Mins">
+                        <input type="number" id="ex-val2" placeholder="Reps">
                     </div>
-                    <button onclick="saveEx()" class="w-full py-4 btn-nitro rounded-xl text-[10px] uppercase italic">Valider l'effort</button>
+
+                    <button onclick="saveEx()" class="w-full btn-main mt-4">Enregistrer</button>
                 </div>
             </div>
-            <div id="day-list" class="space-y-2"></div>
+
+            <div id="day-list" class="space-y-3"></div>
         </section>
 
-        <section id="view-stats" class="hidden space-y-4 text-center">
+        <section id="view-stats" class="hidden space-y-6">
             <div class="card p-6">
-                <canvas id="weightChart" height="200"></canvas>
-                <div class="mt-6 flex gap-2">
-                    <input type="number" id="weight-in" placeholder="Kg" class="flex-1 text-center font-sport text-xl">
-                    <button onclick="addWeight()" class="px-6 btn-nitro rounded-xl uppercase text-xs">OK</button>
+                <h3 class="text-xs font-black uppercase opacity-30 mb-6 text-center">Évolution du poids</h3>
+                <canvas id="weightChart" height="220"></canvas>
+            </div>
+            
+            <div class="card p-6">
+                <div class="flex gap-4 items-end">
+                    <div class="flex-1">
+                        <p class="text-[10px] font-black opacity-40 uppercase ml-1">Nouveau Poids</p>
+                        <input type="number" id="weight-in" placeholder="00.0">
+                    </div>
+                    <button onclick="addWeight()" class="btn-main px-8">OK</button>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <nav class="glass fixed bottom-0 w-full z-50 py-4 pb-10 px-8 flex justify-between items-center">
-        <button onclick="nav('dash', this)" class="nav-active opacity-40 flex flex-col items-center">
-            <span class="text-xl">🏠</span>
+    <nav class="glass-nav fixed bottom-0 w-full z-50 pt-4 pb-10 px-10 flex justify-between items-center">
+        <button onclick="nav('dash', this)" class="nav-item nav-active opacity-40 flex flex-col items-center">
+            <span class="text-2xl">⚡</span>
             <span class="text-[8px] font-black mt-1 uppercase">Home</span>
         </button>
-        <button onclick="nav('plan', this)" class="opacity-40 flex flex-col items-center">
-            <span class="text-xl">🔥</span>
-            <span class="text-[8px] font-black mt-1 uppercase">Entraîner</span>
+        <button onclick="nav('plan', this)" class="nav-item flex flex-col items-center opacity-40">
+            <span class="text-2xl">🏋️</span>
+            <span class="text-[8px] font-black mt-1 uppercase">Sport</span>
         </button>
-        <button onclick="nav('stats', this)" class="opacity-40 flex flex-col items-center">
-            <span class="text-xl">📈</span>
-            <span class="text-[8px] font-black mt-1 uppercase">Progrès</span>
+        <button onclick="nav('stats', this)" class="nav-item flex flex-col items-center opacity-40">
+            <span class="text-2xl">📉</span>
+            <span class="text-[8px] font-black mt-1 uppercase">Stats</span>
         </button>
     </nav>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('sofian_fit_db')) || {
+        let db = JSON.parse(localStorage.getItem('sofian_fit_v5')) || {
             days: {}, weights: [], junk: {}
         };
 
         const phrases = [
             "ON NE LÂCHE RIEN SOFIAN !",
             "T'ES UNE MACHINE OU QUOI ?",
-            "ALLEZ ON Y CROIT, CHAQUE RÉP COMPTE !",
+            "ALLEZ ON Y CROIT !",
             "LE GRAS NE VA PAS PARTIR TOUT SEUL !",
-            "RESTE FOCUS SOFIAN, LE RÉSULTAT ARRIVE !",
-            "PAS D'EXCUSES, QUE DE LA SUEUR !"
+            "RESTE FOCUS SOFIAN !"
         ];
 
         let selDate = new Date().toISOString().split('T')[0];
 
-        function save() { localStorage.setItem('sofian_fit_db', JSON.stringify(db)); render(); }
+        function save() { localStorage.setItem('sofian_fit_v5', JSON.stringify(db)); render(); }
 
         function nav(id, btn) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
@@ -151,7 +210,7 @@
         }
 
         function promptJunk() {
-            const food = prompt("Qu'est-ce que tu as mangé ? (Sois honnête Sofian...)");
+            const food = prompt("C'était quoi le craquage ?");
             if(!food) return;
             const week = getWeek(new Date(selDate));
             if(!db.junk[week]) db.junk[week] = [];
@@ -179,6 +238,8 @@
             });
             save();
             document.getElementById('ex-name').value = "";
+            document.getElementById('ex-val1').value = "";
+            document.getElementById('ex-val2').value = "";
         }
 
         function addWeight() {
@@ -186,25 +247,22 @@
             if(!v) return;
             db.weights.push({d: selDate, v: parseFloat(v)});
             save();
+            document.getElementById('weight-in').value = "";
         }
 
         function render() {
-            document.getElementById('moto-text').innerText = phrases[Math.floor(Math.random() * phrases.length)];
-            document.getElementById('sel-date-label').innerText = selDate;
+            const moto = document.getElementById('moto-text');
+            moto.innerText = phrases[Math.floor(Math.random() * phrases.length)];
 
-            // Junk Food Section
+            // Fast Food
             const week = getWeek(new Date(selDate));
-            const listJunk = db.junk[week] || [];
-            document.getElementById('val-junk').innerText = `${listJunk.length} / 2`;
-            document.getElementById('junk-alert').classList.toggle('hidden', listJunk.length <= 2);
-            document.getElementById('junk-list').innerHTML = listJunk.map(j => `
-                <div class="text-[10px] bg-white/5 p-2 rounded flex justify-between uppercase font-bold italic">
-                    <span>${j.f}</span><span class="opacity-40">${j.d}</span>
-                </div>
-            `).join('');
+            const weekJunk = db.junk[week] || [];
+            document.getElementById('val-junk').innerText = weekJunk.length + " / 2";
+            document.getElementById('junk-list').innerHTML = weekJunk.map(j => `• ${j.f}`).join('<br>');
+            if(weekJunk.length > 2) document.getElementById('val-junk').classList.add('text-rose-600');
 
             // Calendar
-            const grid = document.getElementById('calendar-days');
+            const grid = document.getElementById('calendar-grid');
             grid.innerHTML = "";
             const now = new Date();
             const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
@@ -215,26 +273,23 @@
                 grid.innerHTML += `<div onclick="selDate='${dStr}';render()" class="cal-day ${isSel} ${hasSport ? 'cal-planned' : ''}">${d}</div>`;
             }
 
-            // Dashboard Stats
-            let cardioTotal = 0;
-            Object.values(db.days).flat().forEach(e => {
-                if(e.type === 'cardio') cardioTotal += parseInt(e.v1 || 0);
-            });
-            document.getElementById('stat-cardio').innerText = cardioTotal;
+            // Stats
+            let cardio = 0;
+            Object.values(db.days).flat().forEach(e => { if(e.type === 'cardio') cardio += parseInt(e.v1 || 0); });
+            document.getElementById('stat-cardio').innerText = cardio;
             document.getElementById('stat-weight').innerText = db.weights.length ? db.weights[db.weights.length-1].v : "--";
 
-            // List Exercices log
+            // List
             const dList = document.getElementById('day-list');
-            dList.innerHTML = "";
-            (db.days[selDate] || []).forEach(ex => {
-                dList.innerHTML += `
-                    <div class="card p-4 border-l-2 border-blue-500 bg-white/[0.02]">
-                        <p class="text-[9px] font-black text-blue-500 uppercase">${ex.type}</p>
-                        <p class="font-bold text-sm uppercase italic">${ex.name}</p>
-                        <p class="text-xs opacity-50 font-sport">${ex.v1}${ex.type=='muscu'?'kg':' min'} ${ex.v2?' x '+ex.v2:''}</p>
+            dList.innerHTML = (db.days[selDate] || []).map(ex => `
+                <div class="card p-4 flex justify-between items-center bg-white/5 border-none">
+                    <div>
+                        <p class="text-[8px] font-black text-rose-500 uppercase">${ex.type}</p>
+                        <p class="font-bold text-sm uppercase">${ex.name}</p>
                     </div>
-                `;
-            });
+                    <p class="font-sport text-xs text-rose-500">${ex.v1}${ex.type=='muscu'?'kg':' min'} ${ex.v2?'x'+ex.v2:''}</p>
+                </div>
+            `).join('');
 
             updateChart();
         }
@@ -250,13 +305,18 @@
                     datasets: [{
                         data: data.map(x => x.v),
                         borderColor: '#ff003c',
-                        borderWidth: 3,
+                        borderWidth: 4,
                         tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#ff003c'
+                        pointRadius: 0
                     }]
                 },
-                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+                options: { 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        y: { display: false }, 
+                        x: { grid: { display: false }, ticks: { color: '#444', font: { weight: 'bold' } } } 
+                    } 
+                }
             });
         }
 
