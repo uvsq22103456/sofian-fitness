@@ -7,318 +7,190 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;900&display=swap');
-        
-        :root { --bg: #000000; --card: #0a0a0a; --accent: #ff003c; --accent-dim: rgba(255, 0, 60, 0.15); }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg); 
-            color: white; 
-            height: 100dvh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-        }
-
-        /* Réglage du scroll pour éviter que la barre de nav cache le contenu */
-        .view-container { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding-bottom: 180px !important; /* Espace de sécurité en bas */
-            -webkit-overflow-scrolling: touch;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap');
+        :root { --bg: #000000; --card: #0d0d0d; --accent: #ff003c; --blue: #0084ff; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
         .font-sport { font-family: 'Orbitron', sans-serif; }
+        .view-container { flex: 1; overflow-y: auto; padding-bottom: 200px !important; }
+        .glass { background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
         
-        /* Glassmorphism pour la barre du haut et du bas */
-        .glass-nav { 
-            background: rgba(0, 0, 0, 0.8); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
+        /* CALENDRIER FRANCAIS */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .cal-day { aspect-ratio: 1/1; border-radius: 10px; background: #151515; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; border: 1px solid transparent; position: relative; }
+        .cal-day.active { border-color: var(--accent); background: rgba(255,0,60,0.1); }
+        .cal-today { color: var(--accent); text-decoration: underline; }
+        .event-dot { width: 4px; height: 4px; background: var(--blue); border-radius: 50%; position: absolute; bottom: 4px; }
 
-        .card { 
-            background: var(--card); 
-            border: 1px solid rgba(255,255,255,0.05); 
-            border-radius: 24px; 
-        }
-
-        /* Design des inputs ultra-pro */
-        input, select {
-            background: transparent !important;
-            border: none !important;
-            border-bottom: 2px solid rgba(255,255,255,0.1) !important;
-            color: white !important;
-            padding: 12px 4px !important;
-            border-radius: 0 !important;
-            outline: none !important;
-            transition: all 0.3s;
-            font-weight: 600;
-            width: 100%;
-        }
-
-        input:focus { border-bottom-color: var(--accent) !important; background: rgba(255,0,60,0.05) !important; }
-
-        .cal-day { 
-            aspect-ratio: 1/1; border-radius: 14px; font-size: 12px; font-weight: 900; 
-            background: #0f0f0f; display: flex; align-items: center; justify-content: center; 
-        }
-        .cal-selected { background: var(--accent) !important; color: black !important; }
-        .cal-planned { border: 1px solid var(--accent); color: var(--accent); }
-
-        .btn-main {
-            background: var(--accent);
-            color: black;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 16px;
-            border-radius: 18px;
-            transition: 0.2s;
-        }
-        .btn-main:active { transform: scale(0.96); opacity: 0.8; }
-
-        .nav-active { color: var(--accent); transform: scale(1.1); }
+        /* INPUTS ESTHÉTIQUES */
+        input, select { background: transparent !important; border: none !important; border-bottom: 1px solid rgba(255,255,255,0.2) !important; color: white !important; padding: 10px 0 !important; width: 100%; outline: none !important; font-size: 15px; }
+        input:focus { border-bottom-color: var(--accent) !important; }
+        
+        .card { background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; }
+        .btn-add { background: var(--accent); color: black; font-weight: 800; text-transform: uppercase; padding: 14px; border-radius: 12px; width: 100%; margin-top: 15px; font-size: 12px; }
+        .nav-item { opacity: 0.3; transition: 0.3s; }
+        .nav-active { opacity: 1; color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <header class="pt-14 pb-4 px-8 glass-nav sticky top-0 z-50">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="font-sport text-xl italic tracking-tighter">SOFIAN<span class="text-rose-600">.FIT</span></h1>
-                <p id="moto-text" class="text-[9px] font-black uppercase tracking-[0.2em] text-rose-500 mt-1">SOUFFRE MAINTENANT, BRILLE APRÈS</p>
-            </div>
-            <div class="bg-rose-600 text-black px-3 py-1 rounded-full font-sport text-xs" id="streak-val">0 🔥</div>
+    <header class="pt-12 pb-4 px-6 glass sticky top-0 z-50 flex justify-between items-center">
+        <div>
+            <h1 class="font-sport text-lg italic italic">SOFIAN<span class="text-rose-600">.FIT</span></h1>
+            <p id="quote" class="text-[8px] font-bold opacity-50 uppercase tracking-widest">Allez Sofian, on lâche rien !</p>
         </div>
+        <div class="bg-rose-600/10 text-rose-500 px-3 py-1 rounded-full font-sport text-[10px]" id="current-month">Fév. 2026</div>
     </header>
 
-    <main class="view-container p-6 space-y-8">
+    <main class="view-container p-4 space-y-6">
 
-        <section id="view-dash" class="space-y-6">
-            <div class="card p-5">
-                <div id="calendar-grid" class="grid grid-cols-7 gap-3"></div>
+        <section id="view-cal" class="space-y-4">
+            <div class="card">
+                <div class="cal-grid text-[9px] font-black opacity-30 uppercase mb-2 text-center">
+                    <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+                </div>
+                <div id="calendar-body" class="cal-grid text-center"></div>
             </div>
 
-            <div class="card p-6 border-l-4 border-rose-600">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 class="text-[10px] font-black uppercase opacity-40 mb-1">Cheat Meals /2 Hebdo</h2>
-                        <div class="text-3xl font-sport" id="val-junk">0</div>
-                    </div>
-                    <button onclick="promptJunk()" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl">🍔</button>
-                </div>
-                <div id="junk-list" class="space-y-2 opacity-60 italic text-xs"></div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="card p-5">
-                    <p class="text-[9px] font-black opacity-30 uppercase">Cardio (min)</p>
-                    <p class="text-2xl font-sport text-rose-500" id="stat-cardio">0</p>
-                </div>
-                <div class="card p-5">
-                    <p class="text-[9px] font-black opacity-30 uppercase">Poids (kg)</p>
-                    <p class="text-2xl font-sport" id="stat-weight">--</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-plan" class="hidden space-y-6">
-            <div class="card p-6 space-y-6">
-                <h2 class="font-sport text-xs text-rose-500 tracking-widest text-center">LOG D'ENTRAÎNEMENT</h2>
-                
-                <div class="space-y-4">
-                    <select id="ex-type">
-                        <option value="muscu">🏋️ MUSCULATION</option>
-                        <option value="cardio">🏃 CARDIO</option>
+            <div class="card space-y-4">
+                <h3 class="text-xs font-black text-blue-500 uppercase italic">Programmer le <span id="target-date">--</span></h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="time" id="plan-time" value="18:00">
+                    <select id="plan-type">
+                        <option value="Courir 🏃">COURIR</option>
+                        <option value="Muscu 🏋️">MUSCU</option>
+                        <option value="Cardio 🔥">CARDIO</option>
                     </select>
-                    
-                    <input type="text" id="ex-name" placeholder="Nom de l'exercice (Squat, Tapis...)">
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="ex-val1" placeholder="Poids / Mins">
-                        <input type="number" id="ex-val2" placeholder="Reps">
-                    </div>
-
-                    <button onclick="saveEx()" class="w-full btn-main mt-4">Enregistrer</button>
                 </div>
+                <input type="text" id="plan-desc" placeholder="Détails (ex: Forêt, 45min, Jambes...)">
+                <button onclick="saveEvent()" class="btn-add">Ajouter au planning</button>
             </div>
 
-            <div id="day-list" class="space-y-3"></div>
+            <div id="day-events" class="space-y-2"></div>
         </section>
 
-        <section id="view-stats" class="hidden space-y-6">
-            <div class="card p-6">
-                <h3 class="text-xs font-black uppercase opacity-30 mb-6 text-center">Évolution du poids</h3>
-                <canvas id="weightChart" height="220"></canvas>
+        <section id="view-junk" class="hidden space-y-4">
+            <div class="card border-l-4 border-rose-600">
+                <h2 class="text-xs font-black opacity-40 uppercase">Cheat Meals Hebdo (Max 2)</h2>
+                <div class="text-4xl font-sport my-2" id="junk-count">0</div>
+                <input type="text" id="junk-name" placeholder="Qu'est-ce que tu as mangé ?">
+                <button onclick="addJunk()" class="btn-add">Enregistrer le craquage</button>
             </div>
-            
-            <div class="card p-6">
-                <div class="flex gap-4 items-end">
-                    <div class="flex-1">
-                        <p class="text-[10px] font-black opacity-40 uppercase ml-1">Nouveau Poids</p>
-                        <input type="number" id="weight-in" placeholder="00.0">
-                    </div>
-                    <button onclick="addWeight()" class="btn-main px-8">OK</button>
-                </div>
-            </div>
+            <div id="junk-history" class="space-y-2"></div>
         </section>
 
     </main>
 
-    <nav class="glass-nav fixed bottom-0 w-full z-50 pt-4 pb-10 px-10 flex justify-between items-center">
-        <button onclick="nav('dash', this)" class="nav-item nav-active opacity-40 flex flex-col items-center">
-            <span class="text-2xl">⚡</span>
-            <span class="text-[8px] font-black mt-1 uppercase">Home</span>
+    <nav class="glass fixed bottom-0 w-full z-50 pt-4 pb-10 px-10 flex justify-around items-center border-t border-white/5">
+        <button onclick="showTab('cal', this)" class="nav-item nav-active flex flex-col items-center">
+            <span class="text-xl">📅</span>
+            <span class="text-[8px] font-bold mt-1 uppercase">Planning</span>
         </button>
-        <button onclick="nav('plan', this)" class="nav-item flex flex-col items-center opacity-40">
-            <span class="text-2xl">🏋️</span>
-            <span class="text-[8px] font-black mt-1 uppercase">Sport</span>
-        </button>
-        <button onclick="nav('stats', this)" class="nav-item flex flex-col items-center opacity-40">
-            <span class="text-2xl">📉</span>
-            <span class="text-[8px] font-black mt-1 uppercase">Stats</span>
+        <button onclick="showTab('junk', this)" class="nav-item flex flex-col items-center">
+            <span class="text-xl">🍔</span>
+            <span class="text-[8px] font-bold mt-1 uppercase">Cheat</span>
         </button>
     </nav>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('sofian_fit_v5')) || {
-            days: {}, weights: [], junk: {}
+        // DONNÉES SAUVEGARDÉES
+        let db = JSON.parse(localStorage.getItem('sofian_ultra_db')) || {
+            events: {}, // "YYYY-MM-DD": [{time, type, desc}]
+            junk: []    // [{date, name}]
         };
 
-        const phrases = [
-            "ON NE LÂCHE RIEN SOFIAN !",
-            "T'ES UNE MACHINE OU QUOI ?",
-            "ALLEZ ON Y CROIT !",
-            "LE GRAS NE VA PAS PARTIR TOUT SEUL !",
-            "RESTE FOCUS SOFIAN !"
-        ];
+        let selectedDate = new Date().toISOString().split('T')[0];
 
-        let selDate = new Date().toISOString().split('T')[0];
+        function save() { 
+            localStorage.setItem('sofian_ultra_db', JSON.stringify(db)); 
+            render(); 
+        }
 
-        function save() { localStorage.setItem('sofian_fit_v5', JSON.stringify(db)); render(); }
-
-        function nav(id, btn) {
+        function showTab(id, btn) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById('view-' + id).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('nav-active'));
             btn.classList.add('nav-active');
         }
 
-        function promptJunk() {
-            const food = prompt("C'était quoi le craquage ?");
-            if(!food) return;
-            const week = getWeek(new Date(selDate));
-            if(!db.junk[week]) db.junk[week] = [];
-            db.junk[week].push({d: selDate, f: food});
+        function saveEvent() {
+            const time = document.getElementById('plan-time').value;
+            const type = document.getElementById('plan-type').value;
+            const desc = document.getElementById('plan-desc').value;
+            if(!desc) return alert("Précise ce que tu vas faire !");
+            
+            if(!db.events[selectedDate]) db.events[selectedDate] = [];
+            db.events[selectedDate].push({ time, type, desc });
+            document.getElementById('plan-desc').value = "";
             save();
         }
 
-        function getWeek(d) {
-            const date = new Date(d.getTime());
-            date.setHours(0,0,0,0);
-            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-            const w1 = new Date(date.getFullYear(), 0, 4);
-            return 1 + Math.round(((date.getTime() - w1.getTime()) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7);
-        }
-
-        function saveEx() {
-            const type = document.getElementById('ex-type').value;
-            const name = document.getElementById('ex-name').value;
+        function addJunk() {
+            const name = document.getElementById('junk-name').value;
             if(!name) return;
-            if(!db.days[selDate]) db.days[selDate] = [];
-            db.days[selDate].push({
-                type, name, 
-                v1: document.getElementById('ex-val1').value,
-                v2: document.getElementById('ex-val2').value
-            });
+            db.junk.push({ date: new Date().toISOString().split('T')[0], name: name });
+            document.getElementById('junk-name').value = "";
             save();
-            document.getElementById('ex-name').value = "";
-            document.getElementById('ex-val1').value = "";
-            document.getElementById('ex-val2').value = "";
-        }
-
-        function addWeight() {
-            const v = document.getElementById('weight-in').value;
-            if(!v) return;
-            db.weights.push({d: selDate, v: parseFloat(v)});
-            save();
-            document.getElementById('weight-in').value = "";
         }
 
         function render() {
-            const moto = document.getElementById('moto-text');
-            moto.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-
-            // Fast Food
-            const week = getWeek(new Date(selDate));
-            const weekJunk = db.junk[week] || [];
-            document.getElementById('val-junk').innerText = weekJunk.length + " / 2";
-            document.getElementById('junk-list').innerHTML = weekJunk.map(j => `• ${j.f}`).join('<br>');
-            if(weekJunk.length > 2) document.getElementById('val-junk').classList.add('text-rose-600');
-
-            // Calendar
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = "";
+            // Rendu du Calendrier
+            const body = document.getElementById('calendar-body');
+            body.innerHTML = "";
             const now = new Date();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const offset = firstDay === 0 ? 6 : firstDay - 1;
+
+            for(let i=0; i<offset; i++) body.innerHTML += `<div></div>`;
+            
             for(let d=1; d<=daysInMonth; d++) {
-                const dStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const hasSport = db.days[dStr] && db.days[dStr].length > 0;
-                const isSel = dStr === selDate ? 'cal-selected' : '';
-                grid.innerHTML += `<div onclick="selDate='${dStr}';render()" class="cal-day ${isSel} ${hasSport ? 'cal-planned' : ''}">${d}</div>`;
+                const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const hasEvent = db.events[dStr] && db.events[dStr].length > 0;
+                const isSelected = dStr === selectedDate ? 'active' : '';
+                const isToday = dStr === new Date().toISOString().split('T')[0] ? 'cal-today' : '';
+                
+                body.innerHTML += `
+                    <div onclick="selectDate('${dStr}')" class="cal-day ${isSelected} ${isToday}">
+                        ${d}
+                        ${hasEvent ? '<div class="event-dot"></div>' : ''}
+                    </div>
+                `;
             }
 
-            // Stats
-            let cardio = 0;
-            Object.values(db.days).flat().forEach(e => { if(e.type === 'cardio') cardio += parseInt(e.v1 || 0); });
-            document.getElementById('stat-cardio').innerText = cardio;
-            document.getElementById('stat-weight').innerText = db.weights.length ? db.weights[db.weights.length-1].v : "--";
+            document.getElementById('target-date').innerText = selectedDate;
 
-            // List
-            const dList = document.getElementById('day-list');
-            dList.innerHTML = (db.days[selDate] || []).map(ex => `
-                <div class="card p-4 flex justify-between items-center bg-white/5 border-none">
+            // Liste des évènements du jour
+            const evList = document.getElementById('day-events');
+            evList.innerHTML = (db.events[selectedDate] || []).map((ev, i) => `
+                <div class="card flex justify-between items-center bg-white/5 border-none py-3">
                     <div>
-                        <p class="text-[8px] font-black text-rose-500 uppercase">${ex.type}</p>
-                        <p class="font-bold text-sm uppercase">${ex.name}</p>
+                        <span class="text-blue-500 font-sport text-[10px] mr-2">${ev.time}</span>
+                        <span class="font-bold text-sm uppercase">${ev.type}</span>
+                        <p class="text-xs opacity-50 ml-10">${ev.desc}</p>
                     </div>
-                    <p class="font-sport text-xs text-rose-500">${ex.v1}${ex.type=='muscu'?'kg':' min'} ${ex.v2?'x'+ex.v2:''}</p>
+                    <button onclick="deleteEv('${selectedDate}', ${i})" class="text-white/20">×</button>
                 </div>
             `).join('');
 
-            updateChart();
+            // Junk Food Count (7 derniers jours)
+            const count = db.junk.filter(j => {
+                const diff = (new Date() - new Date(j.date)) / (1000 * 60 * 60 * 24);
+                return diff <= 7;
+            }).length;
+            document.getElementById('junk-count').innerText = count + " / 2";
+            document.getElementById('junk-count').style.color = count > 2 ? '#ff003c' : 'white';
+
+            document.getElementById('junk-history').innerHTML = db.junk.slice(-5).reverse().map(j => `
+                <div class="text-[10px] opacity-40 italic">📅 ${j.date} : ${j.name}</div>
+            `).join('');
         }
 
-        function updateChart() {
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            if(window.wChart) window.wChart.destroy();
-            const data = db.weights.slice(-7);
-            window.wChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.map(x => x.d.split('-')[2]),
-                    datasets: [{
-                        data: data.map(x => x.v),
-                        borderColor: '#ff003c',
-                        borderWidth: 4,
-                        tension: 0.4,
-                        pointRadius: 0
-                    }]
-                },
-                options: { 
-                    plugins: { legend: { display: false } }, 
-                    scales: { 
-                        y: { display: false }, 
-                        x: { grid: { display: false }, ticks: { color: '#444', font: { weight: 'bold' } } } 
-                    } 
-                }
-            });
-        }
+        function selectDate(d) { selectedDate = d; render(); }
+        function deleteEv(date, index) { db.events[date].splice(index, 1); save(); }
 
         render();
     </script>
